@@ -151,25 +151,31 @@
       <div v-show="isMobileMenuOpen" class="md:hidden" @click.self="isMobileMenuOpen = false">
         <div class="space-y-1 pb-3 pt-2">
           <a
-            href="/services"
+            href="/#"
             class="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-all"
           >
             Servicios
           </a>
           <a
-            href="/about"
+            href="/#"
             class="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-all"
           >
             Nosotros
           </a>
           <a
-            href="/contact"
+            href="/#"
             class="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-all"
           >
             Contacto
           </a>
           <div class="border-t border-gray-200 dark:border-gray-800 pt-4 pb-3">
-            <div class="space-y-1">
+            <button
+              @click="showWaitlistModal = true"
+              class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Lista de espera
+            </button>
+            <!-- <div class="space-y-1">
               <a
                 href="/login"
                 class="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-all"
@@ -182,7 +188,7 @@
               >
                 Registrarse
               </a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

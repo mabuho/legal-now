@@ -18,10 +18,6 @@
       <section class="py-24 space-y-8 md:space-y-16">
         <div class="container mx-auto px-4">
           <div class="mx-auto flex max-w-[64rem] flex-col items-center gap-4 text-center">
-            <!-- <div class="inline-flex items-center rounded-full border border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm px-6 py-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-              <span class="flex h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
-              Servicios Legales Modernos
-            </div> -->
             <h1
               class="text-6xl font-bold sm:text-5xl md:text-6xl lg:text-8xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
@@ -33,7 +29,7 @@
               Conectamos a personas y empresas con los mejores profesionales legales. <br>
               Obtén asesoría legal de calidad de manera rápida y eficiente.
             </p>
-            <div class="flex gap-4">
+            <!-- <div class="flex gap-4">
               <a
                 href="/register"
                 class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:-translate-y-0.5"
@@ -46,7 +42,13 @@
               >
                 Ver Servicios
               </a>
-            </div>
+            </div> -->
+            <button
+              @click="showWaitlistModal = true"
+              class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Lista de espera
+            </button>
           </div>
         </div>
       </section>
@@ -164,11 +166,25 @@
         </div>
       </section>
     </div>
+    <WaitlistModal
+        :show="showWaitlistModal"
+        @close="showWaitlistModal = false"
+        @submit="handleWaitlistSubmit"
+      />
   </div>
 </template>
 
 <script setup lang="ts">
 import ScreenshotCarousel from '@/components/ScreenshotCarousel.vue'
+import WaitlistModal from '@/components/WaitlistModal.vue'
+import { ref } from 'vue'
+
+const showWaitlistModal = ref(false)
+
+const handleWaitlistSubmit = (email: string) => {
+  console.log('Waitlist email:', email)
+  showWaitlistModal.value = false
+}
 </script>
 
 <style scoped>
