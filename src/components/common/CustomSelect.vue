@@ -25,8 +25,8 @@ const emit = defineEmits<{
 // Component state
 const isActive = ref(false)
 const focusedOption = ref<Option | null>(null)
-const buttonRef = ref(null)
-const dropdownRef = ref(null)
+const buttonRef = ref<HTMLElement | null>(null) 
+const dropdownRef = ref<HTMLElement | null>(null)
 const selectWidth = ref(0)
 
 const { floatingStyles, update } = useFloating(buttonRef, dropdownRef, {
@@ -41,7 +41,7 @@ const selectedOptionData = computed(() => {
 
 // Methods
 const updateDropdownWidth = () => {
-  const button = buttonRef.value?.$el || buttonRef.value
+  const button = buttonRef.value
   if (button) {
     selectWidth.value = button.offsetWidth
     update?.()
@@ -70,7 +70,7 @@ const navigateOptions = (direction: 'up' | 'down') => {
   }
 
   const currentIndex = focusedOption.value
-    ? props.options.findIndex(opt => opt.value === focusedOption.value.value)
+    ? props.options.findIndex(opt => opt.value === focusedOption.value?.value)
     : -1
 
   let newIndex
@@ -92,8 +92,8 @@ const clearSelection = (e: Event) => {
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event: Event) => {
-  const select = buttonRef.value?.$el || buttonRef.value
-  const dropdown = dropdownRef.value?.$el || dropdownRef.value
+  const select = buttonRef.value
+  const dropdown = dropdownRef.value
   
   if (select && 
       !select.contains(event.target as Node) && 
@@ -120,8 +120,8 @@ onUnmounted(() => {
     class="select-menu"
     :class="{ active: isActive }"
     @keydown.esc="isActive = false"
-    @keydown.enter.prevent="isActive ? selectOption(focusedOption) : toggleDropdown()"
-    @keydown.space.prevent="isActive ? selectOption(focusedOption) : toggleDropdown()"
+    @keydown.enter.prevent="isActive ? selectOption(focusedOption as Option) : toggleDropdown()"
+    @keydown.space.prevent="isActive ? selectOption(focusedOption as Option) : toggleDropdown()"
     @keydown.up.prevent="navigateOptions('up')"
     @keydown.down.prevent="navigateOptions('down')"
     tabindex="0"

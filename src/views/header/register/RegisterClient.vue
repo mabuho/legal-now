@@ -172,7 +172,9 @@ const validateForm = () => {
   let isValid = true
 
   // Reset errors
-  Object.keys(errors).forEach((key) => (errors[key] = ''))
+  Object.keys(errors).forEach((key) => {
+    errors[key as keyof typeof errors] = ''
+  })
 
   if (!formData.firstName) {
     errors.firstName = 'El nombre es requerido'

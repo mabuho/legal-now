@@ -15,7 +15,7 @@
           :class="{ 'border-red-500 dark:border-red-500': errors.email }"
           placeholder="Correo electrónico"
           aria-required="true"
-          aria-invalid="errors.email ? true : false"
+          :aria-invalid="errors.email ? true : false"
           aria-describedby="email-error"
         />
         <label
@@ -45,7 +45,7 @@
             :class="{ 'border-red-500 dark:border-red-500': errors.password }"
             placeholder="Contraseña"
             aria-required="true"
-            aria-invalid="errors.password ? true : false"
+            :aria-invalid="errors.password ? true : false"
             aria-describedby="password-error"
           />
           <label

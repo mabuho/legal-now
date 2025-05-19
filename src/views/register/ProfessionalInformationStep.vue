@@ -14,6 +14,7 @@ import CustomSelect from '@/components/common/CustomSelect.vue'
 const props = defineProps<{
   licenseNumber: string
   specialization: string
+  isFinalStep: boolean
 }>()
 
 const emit = defineEmits<{
@@ -141,9 +142,12 @@ watch(selectedSpecialization, (newValue) => {
 
     <!-- Navigation Buttons -->
     <NavigationButtons
-      :is-next-disabled="!isFormValid"
-      @prev="emit('prev')"
-      @next="emit('valid')"
+      :is-valid="isFormValid"
+      :show-next="true"
+      :show-previous="true"
+      :next-text="isFinalStep ? 'Registrarse' : 'Siguiente'"
+      @next="$emit('valid')"
+      @previous="$emit('prev')"
     />
   </div>
 </template> 

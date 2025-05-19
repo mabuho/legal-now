@@ -14,7 +14,7 @@
             :class="{ 'border-red-500': errors.firstName }"
             placeholder="Nombre"
             aria-required="true"
-            aria-invalid="errors.firstName ? true : false"
+            :aria-invalid="errors.firstName ? true : false"
             aria-describedby="firstName-error"
           />
           <label
@@ -42,7 +42,7 @@
             :class="{ 'border-red-500': errors.lastName }"
             placeholder="Apellido"
             aria-required="true"
-            aria-invalid="errors.lastName ? true : false"
+            :aria-invalid="errors.lastName ? true : false"
             aria-describedby="lastName-error"
           />
           <label
@@ -129,14 +129,14 @@
           id="specialization"
           :class="{ active: isActive }"
           @keydown.esc="isActive = false"
-          @keydown.enter.prevent="isActive ? selectOption(focusedOption) : toggleDropdown()"
-          @keydown.space.prevent="isActive ? selectOption(focusedOption) : toggleDropdown()"
+          @keydown.enter.prevent="isActive ? selectOption(focusedOption as SpecializationOption) : toggleDropdown()"
+          @keydown.space.prevent="isActive ? selectOption(focusedOption as SpecializationOption) : toggleDropdown()"
           @keydown.up.prevent="navigateOptions('up')"
           @keydown.down.prevent="navigateOptions('down')"
           tabindex="0"
           role="combobox"
           aria-haspopup="listbox"
-          aria-expanded="isActive"
+          :aria-expanded="isActive"
           aria-labelledby="specialization-label"
           aria-controls="specialization-options"
         >
@@ -301,7 +301,7 @@
               id="terms"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 transition-colors cursor-pointer"
               aria-required="true"
-              aria-invalid="errors.terms ? true : false"
+              :aria-invalid="errors.terms ? true : false"
               aria-describedby="terms-error"
             />
           </div>
@@ -452,7 +452,7 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isActive = ref(false)
 const selectedOption = ref('')
-const focusedOption = ref(null)
+const focusedOption = ref<SpecializationOption | null>(null)
 
 const specializationOptions = [
   {
@@ -492,6 +492,13 @@ const specializationOptions = [
     iconClass: 'text-gray-700',
   },
 ]
+
+interface SpecializationOption {
+  value: string
+  label: string
+  icon: any
+  iconClass: string
+}
 
 const navigateOptions = (direction: 'up' | 'down') => {
   if (!isActive.value) {
@@ -546,7 +553,17 @@ const formData = reactive({
   terms: false,
 })
 
-const errors = reactive({
+const errors = reactive<{
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  licenseNumber: string
+  specialization: string
+  password: string
+  confirmPassword: string
+  terms: string
+}>({
   firstName: '',
   lastName: '',
   email: '',
@@ -559,7 +576,7 @@ const errors = reactive({
 })
 
 // Password strength computation
-const passwordStrength = computed(() => {
+const passwordStrength = computed<any>(() => {
   const password = formData.password
   if (!password) return { score: 0, label: '', color: 'bg-gray-200' }
 
@@ -579,7 +596,7 @@ const passwordStrength = computed(() => {
     5: { label: 'Muy fuerte', color: 'bg-green-600' },
   }
 
-  return strengthMap[score]
+  return strengthMap[score as keyof typeof strengthMap]
 })
 
 // Phone number formatting
@@ -603,7 +620,9 @@ const validateForm = () => {
   let isValid = true
 
   // Reset errors
-  Object.keys(errors).forEach((key) => (errors[key] = ''))
+  Object.keys(errors).forEach((key) => {
+    errors[key as keyof typeof errors] = ''
+  })
 
   if (!formData.firstName) {
     errors.firstName = 'El nombre es requerido'
@@ -668,7 +687,7 @@ const handleSubmit = async () => {
     // Validate form
     const validationErrors = validateForm()
     if (Object.keys(validationErrors).length > 0) {
-      errors.value = validationErrors
+      //errors.value = validationErrors
       return
     }
 

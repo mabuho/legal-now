@@ -22,7 +22,8 @@ const formData = ref({
   firstName: '',
   lastName: '',
   phone: '',
-  licenseNumber: ''
+  licenseNumber: '',
+  specialization: ''
 })
 
 // Progress calculation
@@ -229,6 +230,8 @@ const navigateToLogin = () => {
             <div v-if="currentStep === 4 && userType === 'lawyer'">
               <ProfessionalInformationStep
                 v-model:licenseNumber="formData.licenseNumber"
+                v-model:specialization="formData.specialization"
+                :isFinalStep="userType === 'lawyer'"
                 @valid="nextStep"
                 @prev="prevStep"
               />

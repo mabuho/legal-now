@@ -56,10 +56,10 @@ const locationOptions = [
 ]
 
 const priceOptions = [
-  { value: 200, label: 'Hasta $200/hr' },
-  { value: 300, label: 'Hasta $300/hr' },
-  { value: 500, label: 'Hasta $500/hr' },
-  { value: 1000, label: 'Hasta $1000/hr' },
+  { value: '200', label: 'Hasta $200/hr' },
+  { value: '300', label: 'Hasta $300/hr' },
+  { value: '500', label: 'Hasta $500/hr' },
+  { value: '1000', label: 'Hasta $1000/hr' },
 ]
 
 const locations = [
