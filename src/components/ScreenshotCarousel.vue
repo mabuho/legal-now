@@ -4,55 +4,55 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
 const screenshots = [
   {
-    src: '/src/assets/screenshots/dashboard1.png',
+    src: './screenshots/dashboard1.png',
     alt: 'Panel de Control',
     title: 'Panel de Control Intuitivo',
     description: 'Gestiona todos tus casos y consultas legales desde un solo lugar'
   },
   {
-    src: '/src/assets/screenshots/dashboard2.png',
+    src: './screenshots/dashboard2.png',
     alt: 'Panel de Control',
     title: 'Panel de Control Intuitivo',
     description: 'Gestiona todos tus casos y consultas legales desde un solo lugar'
   },
   {
-    src: '/src/assets/screenshots/marketplace1.png',
+    src: './screenshots/marketplace1.png',
     alt: 'Marketplace de Abogados',
     title: 'Marketplace de Abogados',
     description: 'Encuentra al profesional ideal para tu caso'
   },
   {
-    src: '/src/assets/screenshots/chat1.png',
+    src: './screenshots/chat1.png',
     alt: 'Chat con Abogados',
     title: 'Chat en Tiempo Real',
     description: 'Comunícate directamente con tu abogado'
   },
   {
-    src: '/src/assets/screenshots/chatbot_ai1.png',
+    src: './screenshots/chatbot_ai1.png',
     alt: 'Asistente Legal IA',
     title: 'Asistente Legal IA',
     description: 'Obtén respuestas inmediatas a tus dudas legales'
   },
   {
-    src: '/src/assets/screenshots/user_profile1.png',
+    src: './screenshots/user_profile1.png',
     alt: 'Perfil de Usuario',
     title: 'Perfil Personalizado',
     description: 'Gestiona tu información y preferencias'
   },
   {
-    src: '/src/assets/screenshots/user_profile2.png',
+    src: './screenshots/user_profile2.png',
     alt: 'Perfil de Usuario',
     title: 'Gestión de información personal',
     description: 'Gestiona tu información y preferencias'
   },
   {
-    src: '/src/assets/screenshots/user_payments1.png',
+    src: './screenshots/user_payments1.png',
     alt: 'Metodos de Pago',
     title: 'Metodos de Pago',
     description: 'Gestiona tus metodos de pago'
   },
   {
-    src: '/src/assets/screenshots/documents1.png',
+    src: './screenshots/documents1.png',
     alt: 'Documentos',
     title: 'Genera documentos con IA',
     description: 'Genera y revisa documentos legales de manera eficiente'
