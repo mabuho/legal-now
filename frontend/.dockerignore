@@ -1,0 +1,26 @@
+node_modules
+dist
+coverage
+*.tsbuild
+*.tsbuildinfo
+.git
+.gitignore
+.dockerignore
+Dockerfile
+.env
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.log
+*.tmp
+*.bak
+*.tmp.*
