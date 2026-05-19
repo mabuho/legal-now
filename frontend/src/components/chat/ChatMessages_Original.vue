@@ -1,0 +1,1 @@
+import ConsultaCard from './chat/ConsultaCard.vue'; 

@@ -1,0 +1,180 @@
+name: legal-now
+
+# --------------------------------------
+#  LegalNow – Mini Stack (Janus + Whisper)
+#  Janus image updated to canyanio/janus-gateway-docker
+# --------------------------------------
+
+services:
+  janus-server:
+    #image: canyan/janus-gateway:0.10.7
+    #image: custom-janus
+    image: sucwangsr/janus-webrtc-gateway-docker:latest
+    container_name: janus_webrtc
+    #platform: linux/amd64
+    restart: always
+    ports:
+      - "8188:8188" # WS     (ws://HOST:8188)
+      #- "8189:8189"          # WSS    (ws://HOST:8188)
+      - "8088:8088" # HTTPS  (wss://HOST:8088)
+      - "7088:7088" # HTTPS  (wss://HOST:8088)
+      - "10000-10003:10000-10003/udp" # RTP media range
+    volumes:
+      - ./backend/janus/conf:/usr/local/etc/janus
+      - ./backend/janus/recordings:/recordings
+      - ./backend/janus/recordings/streams:/recordings/streams
+    networks:
+      - legalnet
+
+  # coturn:
+  #   image: instrumentisto/coturn
+  #   container_name: coturn
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3478:3478"                           # STUN y TURN UDP
+  #     - "3478:3478/udp"
+  #     - "5349:5349"                           # TURN over TLS (opcional)
+  #     - "5349:5349/udp"
+  #   environment:
+  #     - TURN_PORT=3478
+  #     - REALM=306ed936fce1.ngrok-free.app     # ⚠️ Cambia esto por tu dominio
+  #   command: >
+  #     --no-cli
+  #     --log-file=stdout
+  #     --lt-cred-mech
+  #     --realm=306ed936fce1.ngrok-free.app
+  #     --user=testuser:testpass
+  #     --verbose
+  #     --no-tls                                # ⚠️ Activa si configuras certificados
+  #     --fingerprint
+  #     --min-port=49160
+  #     --max-port=49200
+  #     --stale-nonce
+  #     --external-ip=$(curl -s ifconfig.me)    # Intenta obtener IP pública automáticamente
+
+  whisper-server:
+    #image: quay.io/juit/faster-whisper:latest
+    #container_name: whisper-transcriber
+    #image: local-faster-whisper
+    image: fedirz/faster-whisper-server:latest-cpu
+    container_name: whisper_transcriber
+    restart: unless-stopped
+    #command: >
+    #  bash -c "while true; do \
+    #    python /app/transcribre.py /recordings && sleep 300; \
+    #  done"
+    volumes:
+      - ./backend/janus/recordings:/recordings
+      - ./backend/whisper/transcribe.py:/app/transcribe.py
+    networks:
+      - legalnet
+
+  redis-api:
+    build: ./backend/redis-api
+    container_name: redis_api
+    restart: always
+    ports:
+      - "3030:3030"
+    environment:
+      REDIS_SERVER_URL: redis://redis-server:6379
+    depends_on:
+      - redis-server
+    volumes:
+      - ./backend/redis-api:/redis-api
+      - ./backend/redis-api/node_modules:/redis-api/node_modules
+    working_dir: /redis-api
+    networks:
+      - legalnet
+
+  api:
+    build: ./backend/api
+    container_name: legalnow_api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/legalnow
+      SPRING_DATASOURCE_USERNAME: legalnow
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-legalnow}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-please-override-in-production-min-32-bytes-12345678}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - legalnet
+
+  webapp:
+    build: ./frontend
+    container_name: legal-now-webapp
+    restart: unless-stopped
+    ports:
+      - "5173:5173" # Map host port 5173 to container port 5173
+    environment:
+      VITE_JANUS_WSS: wss://janus
+      VITE_JANUS_API_SECRET: janusrocks
+      VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8080/api/v1}
+    depends_on:
+      - janus-server
+      - whisper-server
+      - redis-api
+    networks:
+      - legalnet
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    working_dir: /frontend
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: legalnow_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: legalnow
+      POSTGRES_USER: legalnow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-legalnow}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legalnow -d legalnow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - legalnet
+
+  # Redis cache service
+  # Docs:
+  # https://hub.docker.com/_/redis
+  # https://redis.io/docs/latest/operate/oss_and_stack/management/config-file/
+  redis-server:
+    image: redis:latest # Use a specific tag like redis:7.4-alpine for production
+    container_name: redis-server # Optional: Assign a custom name
+    restart: always
+    #COPY "redis.conf /usr/local/etc/redis/redis.conf"
+    #environment:
+    #  REDIS_ARGS: "--requirepass mypassword --user username on > mypassword ~* allcommands --user default off nopass nocommands"
+    ports:
+      - "6379:6379" # Map host port 6379 to container port 6379
+    #command: [
+    #  "redis-server", "/etc/redis/redis.conf"
+    #]
+    volumes:
+      - ./backend/redis_data:/data # Persist Redis data to a named volume
+    #  - ./backend/redis_data/redis.conf:/etc/redis/redis.conf # Redis custom config
+
+  # RabbitMQ messaging bus
+  #
+  #rabbitmq:
+  #  image: 'bitnami/rabbitmq:3.7'
+  #  ports:
+  #  - "5672:5672"
+  #  - "15672:15672"
+  #  environment:
+  #  - RABBITMQ_PASSWORD=password
+# ---------- Networks ----------
+networks:
+  legalnet:
+    driver: bridge
