@@ -27,8 +27,8 @@ backend/redis_data/
 backend/janus/recordings/
 
 # Java / Maven
-backend/api/target/
-backend/api/.mvn/wrapper/maven-wrapper.jar
+backend/rest-api/target/
+backend/rest-api/.mvn/wrapper/maven-wrapper.jar
 
 # Node / pnpm
 **/node_modules/

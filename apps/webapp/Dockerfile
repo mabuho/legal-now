@@ -2,7 +2,7 @@
 FROM node:lts-alpine
 
 # Set the working directory in the container
-WORKDIR /frontend
+WORKDIR /webapp
 
 # Copy package.json and package-lock.json
 COPY package.json pnpm-lock.yaml ./

@@ -1,0 +1,62 @@
+# ── Build outputs ──────────────────────────────────────────
+**/target/
+**/dist/
+**/.output/
+**/*.class
+**/*.jar
+**/*.war
+
+# ── Dependencies ───────────────────────────────────────────
+**/node_modules/
+**/.pnpm-store/
+
+# ── Caches ─────────────────────────────────────────────────
+**/.gradle/
+**/.m2/
+**/.vite/
+**/.nuxt/
+**/__pycache__/
+
+# ── IDE / Editor ───────────────────────────────────────────
+**/.idea/
+**/.vscode/
+**/*.iml
+
+# ── Logs & temp ────────────────────────────────────────────
+**/*.log
+**/logs/
+**/tmp/
+**/*.tmp
+
+# ── Secrets & env ──────────────────────────────────────────
+**/.env
+**/.env.*
+!**/.env.example
+
+# ── Docker volumes / data ──────────────────────────────────
+**/docker/data/
+**/minio-data/
+**/postgres-data/
+
+# ── Grabaciones / assets binarios ──────────────────────────
+**/*.webm
+**/*.mp4
+**/*.mp3
+**/*.wav
+**/recordings/
+**/uploads/
+
+# ── Test coverage & reports ────────────────────────────────
+**/coverage/
+**/test-results/
+**/*.lcov
+
+# ── Archivos de respaldo (limpiar antes de producción) ─────
+**/*.bkp
+**/*_Original.*
+**/*.orig
+
+# ── Lock files (útiles para reproducibilidad, no para IA) ──
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
