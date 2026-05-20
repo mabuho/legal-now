@@ -38,6 +38,7 @@ import com.legalnow.api.consultation.dto.CreateConsultationRequest;
 import com.legalnow.api.consultation.dto.StatusTransitionRequest;
 import com.legalnow.api.janus.JanusRoomCreationException;
 import com.legalnow.api.janus.JanusService;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import com.legalnow.api.user.Role;
 import com.legalnow.api.user.User;
 import com.legalnow.api.user.UserRepository;
@@ -192,7 +193,7 @@ class ConsultationServiceTest {
         );
 
         long mockRoomId = 12345L;
-        when(janusService.allocateRooms(eq(created.id()))).thenReturn(mockRoomId);
+        when(janusService.allocateRooms(eq(created.id()))).thenReturn(new JanusService.JanusAllocation(mockRoomId, "testpin123456"));
 
         ConsultationResponse inProgress = consultationService.transition(
             created.id(),
@@ -201,6 +202,7 @@ class ConsultationServiceTest {
 
         assertEquals("in_progress", inProgress.status());
         assertEquals(mockRoomId, inProgress.janusRoomId());
+        assertEquals("testpin123456", inProgress.janusPin());
         verify(janusService).allocateRooms(eq(created.id()));
     }
 
@@ -231,7 +233,8 @@ class ConsultationServiceTest {
 
         Consultation reloaded = consultationRepository.findById(created.id()).orElseThrow();
         assertEquals(ConsultationStatus.SCHEDULED, reloaded.getStatus());
-        assertNotNull(reloaded.getJanusRoomId() == null);
+        assertNull(reloaded.getJanusRoomId());
+        assertNull(reloaded.getJanusPin());
     }
 
     private void authenticate(UUID userId, Role role) {
