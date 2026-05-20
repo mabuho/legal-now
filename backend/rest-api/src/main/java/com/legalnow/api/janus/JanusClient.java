@@ -1,5 +1,6 @@
 package com.legalnow.api.janus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -45,12 +46,12 @@ public class JanusClient {
 
             destroySession(sessionId, transactionId);
             log.debug("Destroyed session: {}", sessionId);
-        } catch (RestClientException | InterruptedException e) {
+        } catch (RestClientException | InterruptedException | JsonProcessingException e) {
             throw new JanusRoomCreationException("Failed to create " + roomType + " room " + roomId, e);
         }
     }
 
-    private long createSession(String transactionId) throws RestClientException {
+    private long createSession(String transactionId) throws RestClientException, JsonProcessingException {
         String body = """
             {"janus":"create","transaction":"%s"}
             """.formatted(transactionId);
@@ -68,7 +69,7 @@ public class JanusClient {
         return jsonNode.get("data").get("id").asLong();
     }
 
-    private long attachPlugin(long sessionId, String pluginName, String transactionId) throws RestClientException, InterruptedException {
+    private long attachPlugin(long sessionId, String pluginName, String transactionId) throws RestClientException, InterruptedException, JsonProcessingException {
         String body = """
             {"janus":"attach","plugin":"%s","transaction":"%s"}
             """.formatted(pluginName, transactionId);
@@ -100,7 +101,7 @@ public class JanusClient {
         throw new JanusRoomCreationException("Timeout waiting for plugin attach response");
     }
 
-    private void sendCreateRoomMessage(long sessionId, long handleId, long roomId, String roomType, String transactionId) throws RestClientException {
+    private void sendCreateRoomMessage(long sessionId, long handleId, long roomId, String roomType, String transactionId) throws RestClientException, JsonProcessingException {
         String body = roomType.equals("textroom")
             ? """
                 {"janus":"message","handle_id":%d,"transaction":"%s","body":{"request":"create","room":%d,"permanent":false,"history":50}}
@@ -121,7 +122,7 @@ public class JanusClient {
         }
     }
 
-    private void destroySession(long sessionId, String transactionId) throws RestClientException {
+    private void destroySession(long sessionId, String transactionId) throws RestClientException, JsonProcessingException {
         String body = """
             {"janus":"destroy","transaction":"%s"}
             """.formatted(transactionId);
