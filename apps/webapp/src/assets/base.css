@@ -1,42 +1,42 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Brand */
-  --color-brand-primary:      #06b6d4;
+  --color-brand-primary: #06b6d4;
   --color-brand-primary-dark: #0891b2;
-  --color-brand-accent:       #4f46e5;
+  --color-brand-accent: #4f46e5;
 
   /* Surfaces */
-  --color-surface-base:   #080f1a;
+  --color-surface-base: #080f1a;
   --color-surface-raised: #0d1625;
-  --color-surface-card:   #111d2e;
+  --color-surface-card: #111d2e;
 
   /* Borders */
   --color-border-default: #1a2f4a;
-  --color-border-subtle:  #1a2640;
+  --color-border-subtle: #1a2640;
 
   /* Text */
-  --color-text-primary:   #f1f5f9;
+  --color-text-primary: #f1f5f9;
   --color-text-secondary: #94a3b8;
-  --color-text-muted:     #475569;
+  --color-text-muted: #475569;
 
   /* Status */
-  --color-status-active:  #34d399;
+  --color-status-active: #34d399;
   --color-status-payment: #fbbf24;
-  --color-status-error:   #f87171;
+  --color-status-error: #f87171;
 
   /* Border radius */
-  --radius-card:  16px;
-  --radius-btn:   10px;
-  --radius-tag:   20px;
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-tag: 20px;
   --radius-input: 10px;
 
   /* Typography */
-  --font-heading: "Plus Jakarta Sans", sans-serif;
-  --font-body:    Inter, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: Inter, sans-serif;
 
   /* Shadows */
-  --shadow-glow:       0 0 0 1px rgba(6,182,212,0.08), 0 4px 20px rgba(6,182,212,0.05);
-  --shadow-glow-btn:   0 0 16px rgba(6,182,212,0.25);
-  --shadow-glow-hover: 0 0 0 1px rgba(6,182,212,0.25);
+  --shadow-glow: 0 0 0 1px rgba(6, 182, 212, 0.08), 0 4px 20px rgba(6, 182, 212, 0.05);
+  --shadow-glow-btn: 0 0 16px rgba(6, 182, 212, 0.25);
+  --shadow-glow-hover: 0 0 0 1px rgba(6, 182, 212, 0.25);
 }
