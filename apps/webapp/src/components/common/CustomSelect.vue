@@ -206,6 +206,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@reference "tailwindcss";
 .select-menu {
   @apply relative w-full;
 }

@@ -56,6 +56,7 @@ const currentYear = new Date().getFullYear()
 </template>
 
 <style scoped>
+@reference "tailwindcss";
 /* Base styles */
 .footer-link {
   @apply text-base text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors duration-200;
