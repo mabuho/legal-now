@@ -31,7 +31,8 @@ export const initJanusLib = async (): Promise<void> => {
 export const iniciarTextRoom = async (
     chatId: string,
     roomId: number,
-    user: any
+    user: any,
+    pin?: string | null
 ): Promise<void> => {
     const janusStore = useJanusSessionStore();
 
@@ -105,13 +106,14 @@ export const iniciarTextRoom = async (
                 /* DataChanel ready! */
                 ondataopen() {
                     console.log('[Janus_Init] DataChannel is available! Joining roomId', roomId)
-                    const join = {
+                    const join: Record<string, unknown> = {
                         textroom: 'join',
                         transaction: (window as any).Janus.randomString(12),
                         room: roomId,
                         username: user.email,
                         display: user.name
                     };
+                    if (pin) join.pin = pin;
                     textHandle.value!.data({ text: JSON.stringify(join) });
 
                 },

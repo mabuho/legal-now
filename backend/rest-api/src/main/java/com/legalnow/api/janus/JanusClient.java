@@ -23,15 +23,15 @@ public class JanusClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    public void createTextRoom(long roomId) {
-        createRoom(roomId, "janus.plugin.textroom", "textroom");
+    public void createTextRoom(long roomId, String pin) {
+        createRoom(roomId, "janus.plugin.textroom", "textroom", pin);
     }
 
-    public void createVideoRoom(long roomId) {
-        createRoom(roomId, "janus.plugin.videoroom", "videoroom");
+    public void createVideoRoom(long roomId, String pin) {
+        createRoom(roomId, "janus.plugin.videoroom", "videoroom", pin);
     }
 
-    private void createRoom(long roomId, String pluginName, String roomType) {
+    private void createRoom(long roomId, String pluginName, String roomType, String pin) {
         try {
             String transactionId = UUID.randomUUID().toString();
 
@@ -41,7 +41,7 @@ public class JanusClient {
             long handleId = attachPlugin(sessionId, pluginName, transactionId);
             log.debug("Attached {} plugin, handle: {}", pluginName, handleId);
 
-            sendCreateRoomMessage(sessionId, handleId, roomId, roomType, transactionId);
+            sendCreateRoomMessage(sessionId, handleId, roomId, roomType, transactionId, pin);
             log.info("Created {} room {}", roomType, roomId);
 
             destroySession(sessionId, transactionId);
@@ -101,14 +101,14 @@ public class JanusClient {
         throw new JanusRoomCreationException("Timeout waiting for plugin attach response");
     }
 
-    private void sendCreateRoomMessage(long sessionId, long handleId, long roomId, String roomType, String transactionId) throws RestClientException, JsonProcessingException {
+    private void sendCreateRoomMessage(long sessionId, long handleId, long roomId, String roomType, String transactionId, String pin) throws RestClientException, JsonProcessingException {
         String body = roomType.equals("textroom")
             ? """
-                {"janus":"message","handle_id":%d,"transaction":"%s","body":{"request":"create","room":%d,"permanent":false,"history":50}}
-                """.formatted(handleId, transactionId, roomId)
+                {"janus":"message","handle_id":%d,"transaction":"%s","body":{"request":"create","room":%d,"permanent":false,"history":50,"pin":"%s"}}
+                """.formatted(handleId, transactionId, roomId, pin)
             : """
-                {"janus":"message","handle_id":%d,"transaction":"%s","body":{"request":"create","room":%d,"publishers":2,"bitrate":128000}}
-                """.formatted(handleId, transactionId, roomId);
+                {"janus":"message","handle_id":%d,"transaction":"%s","body":{"request":"create","room":%d,"publishers":2,"bitrate":128000,"pin":"%s"}}
+                """.formatted(handleId, transactionId, roomId, pin);
 
         String response = restClient.post()
             .uri("/{sessionId}/{handleId}", sessionId, handleId)

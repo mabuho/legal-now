@@ -46,6 +46,9 @@ public class Consultation {
     @Column(name = "janus_room_id", unique = true)
     private Long janusRoomId;
 
+    @Column(name = "janus_pin", length = 16)
+    private String janusPin;
+
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", insertable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -119,6 +122,14 @@ public class Consultation {
 
     public void setJanusRoomId(Long janusRoomId) {
         this.janusRoomId = janusRoomId;
+    }
+
+    public String getJanusPin() {
+        return janusPin;
+    }
+
+    public void setJanusPin(String janusPin) {
+        this.janusPin = janusPin;
     }
 
     public OffsetDateTime getCreatedAt() {

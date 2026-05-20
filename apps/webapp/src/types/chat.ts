@@ -28,7 +28,8 @@ export interface Consultation {
   client: PublicUser
   lawyer: PublicUser
   scheduled_at: string | null
-  janus_room_id: number | null  // TODO Phase 3: populated by Janus room allocation
+  janus_room_id: number | null
+  janus_pin: string | null
   created_at: string
   updated_at: string
 }

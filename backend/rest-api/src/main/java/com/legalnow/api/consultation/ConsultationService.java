@@ -174,8 +174,9 @@ public class ConsultationService {
         }
 
         if (to == ConsultationStatus.IN_PROGRESS && c.getJanusRoomId() == null) {
-            long roomId = janusService.allocateRooms(c.getId());
-            c.setJanusRoomId(roomId);
+            var allocation = janusService.allocateRooms(c.getId());
+            c.setJanusRoomId(allocation.roomId());
+            c.setJanusPin(allocation.pin());
         }
 
         c.setStatus(to);

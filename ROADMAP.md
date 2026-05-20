@@ -38,14 +38,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Remove Vuetify dependency
 - ⬜ Remove radix-vue dependency if redundant
 
-### Phase 3 — Janus room admin → Java
-- ⬜ Build Janus Admin API client in `com.legalnow.api.janus`
-- ⬜ Move `frontend/scripts/createRooms.ts` logic to Java service
-- ⬜ Persist `janus_room_id` in `consultations` table on creation
-- ⬜ Issue short-lived Janus tokens from Java
-- ⬜ Frontend reads roomId+token from API, keeps `Janus.js` client
-
-### Phase 2 — Migrate Redis-API → Java _(see In Progress)_
 
 ### Lawyer onboarding (cross-cuts phases)
 - ⬜ Document upload endpoints + storage (S3 or similar)
@@ -57,7 +49,13 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 
 ## 🟡 In Progress
 
-### Phase 2 — Migrate Redis-API → Java _(started 2026-05-18)_
+_(nothing active)_
+
+---
+
+## ✅ Done
+
+### Phase 2 — Migrate Redis-API → Java _(completed 2026-05-19)_
 - ✅ Build `com.legalnow.api.consultation` module (entity, repo, service, controller, DTOs, state machine)
 - ✅ Build `com.legalnow.api.chat` module (ChatSession + ChatMessage entities, repos, services, controller, DTOs)
 - ✅ Authorization helper: principal must be client/lawyer of consultation (or admin)
@@ -78,13 +76,17 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
   - `PendingConsultations.vue` 3-tab (Pendientes / Activas / Histórico) + state machine actions (accept/reject/schedule/start/complete/cancel)
   - `ChatPanel.vue` polish — consultations prop, query-string preselect, 5s message polling (Phase 6 WebSocket TODO)
 - ✅ Verified in browser (2026-05-19): full flow client login → see consultations → lawyer accepts → both chat
-- ⬜ Decommission `backend/redis-api/` container in `docker-compose.yaml`
-- ⬜ Decide: keep Redis as cache (Spring Boot `@Cacheable`) or remove entirely
-- ⬜ `initJanusLib.ts` + `initTextRoomPerChat.ts` still call removed `saveChatMessage` — defer to Phase 3 Janus wiring
+- ✅ Decommission `backend/redis-api/` container in `docker-compose.yaml`
+- ✅ Redis removed entirely — no `@Cacheable`, no Spring Redis dep, no redis service in compose
+- ✅ `initJanusLib.ts` + `initTextRoomPerChat.ts` (→ `janusService.ts`) `saveChatMessage` fixed — Phase 3 PR #3
 
----
-
-## ✅ Done
+### Phase 3 — Janus room admin → Java _(merged PR #3, 2026-05-19)_
+- ✅ Build Janus Admin API client in `com.legalnow.api.janus` (`JanusProperties`, `JanusClient`, `JanusService`)
+- ✅ Wire `JanusService` into `ConsultationService` — room created on consultation
+- ✅ Persist `janus_room_id` in `consultations` table on creation
+- ✅ Frontend reads `roomId` from API, keeps `Janus.js` client
+- ✅ Remove dead room-creation code from frontend; rename `initTextRoomPerChat.ts` → `janusService.ts`
+- ✅ Issue short-lived Janus room pins from Java — generated on `IN_PROGRESS` transition, stored in `consultations.janus_pin`, exposed in `ConsultationResponse`, frontend passes in join payload
 
 ### Phase 1 — Java REST API base
 - ✅ Spring Boot 3.3.5 Maven scaffold at `backend/api/`
