@@ -38,8 +38,8 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 
 ### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution
 - ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
-- ⬜ Landing: refactor Home.vue (hero centrado, nav, secciones, footer)
-- ⬜ Auth: LoginView + RegisterView con tokens
+- ✅ Landing: refactor Home.vue (hero centrado, nav, secciones, footer) — PR #8
+- ✅ Auth: LoginView + RegisterView con tokens — PR #8
 - ⬜ Dashboard layout + routing (nav Consultas/Historial, btn Nueva)
 - ⬜ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory)
 - ⬜ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav
