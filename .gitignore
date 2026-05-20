@@ -42,3 +42,4 @@ backend/rest-api/.mvn/wrapper/maven-wrapper.jar
 # Vite / Vue build artifacts (within frontend handled by its own .gitignore too)
 frontend/test-results/
 frontend/playwright-report/
+.superpowers/
