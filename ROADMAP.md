@@ -17,18 +17,24 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 
 ## 📋 Backlog
 
-### Phase 6 — AI matching / triage engine
+### Phase 7 — AI matching / triage engine
 - ⬜ Define matching algorithm (specialization + availability + rating + price)
 - ⬜ Replace `legalTriage.ts` bot stub with real triage service
 - ⬜ Wire matching to `consultations` creation flow
 - ⬜ Track lawyer ratings (new table)
 
-### Phase 5 — Payments (Stripe Connect + Mercado Pago)
+### Phase 6 — Payments (Stripe Connect + Mercado Pago) _(requires Phase 5 lawyer verification)_
 - ⬜ Stripe Connect onboarding for lawyers (payouts)
 - ⬜ Stripe Checkout for client payments
 - ⬜ Webhooks handling (idempotent, signature-verified)
-- ⬜ Mercado Pago integration (phase 5b)
+- ⬜ Mercado Pago integration (phase 6b)
 - ⬜ Refund flow
+
+### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
+- ⬜ Document upload endpoints + storage (S3 or similar)
+- ⬜ New tables: `lawyer_documents`, `verification_attempts` (Flyway V4+)
+- ⬜ Gov API integration: SAT (cédula profesional), SEP/RNP (título)
+- ⬜ Verification state machine → set `lawyer_profiles.verified_at`
 
 ### Phase 4 — Frontend: Vuetify → Tailwind
 - ⬜ Install Tailwind in `frontend/`
@@ -37,13 +43,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Migrate chat / video views
 - ⬜ Remove Vuetify dependency
 - ⬜ Remove radix-vue dependency if redundant
-
-
-### Lawyer onboarding (cross-cuts phases)
-- ⬜ Document upload endpoints + storage (S3 or similar)
-- ⬜ New tables: `lawyer_documents`, `verification_attempts` (Flyway V3+)
-- ⬜ Gov API integration: SAT (cédula profesional), SEP/RNP (título)
-- ⬜ Verification state machine → set `lawyer_profiles.verified_at`
 
 ---
 
