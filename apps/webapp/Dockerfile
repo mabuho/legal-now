@@ -4,11 +4,13 @@ FROM node:lts-alpine
 # Set the working directory in the container
 WORKDIR /webapp
 
-# Copy package.json and package-lock.json
+RUN npm install -g pnpm
+
+# Copy manifests first for layer caching
 COPY package.json pnpm-lock.yaml ./
 
-# Install any needed packages specified in package.json
-RUN npm install 
+# Install dependencies using pnpm (respects pnpm-lock.yaml)
+RUN pnpm install --frozen-lockfile
 
 # Copy the dorest of the application code
 COPY . ./
