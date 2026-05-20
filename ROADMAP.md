@@ -47,7 +47,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Dashboard layout + routing (nav Consultas/Historial, btn Nueva) — PR #9
 - ✅ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory) — PR #10
 - ✅ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav — PR #11
-- ⬜ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register
+- ✅ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register — PR #12
 
 ---
 
