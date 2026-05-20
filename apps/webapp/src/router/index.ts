@@ -152,8 +152,6 @@ router.beforeEach(async (to) => {
   const isLogin = to.name === 'login'
   const allowedRoles = to.meta.roles as string[] | undefined
 
-  console.log('[ROUTER] navigating to:', to.fullPath, 'user:', auth.user?.email, 'role:', auth.user?.role)
-
   if (!auth.user && !to.meta.public) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
