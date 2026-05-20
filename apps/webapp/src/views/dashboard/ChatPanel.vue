@@ -150,9 +150,10 @@ async function selectChat(chat: ChatSession) {
         // Phase 3: Join pre-created Janus TextRoom (backend allocates on IN_PROGRESS)
         const consultation = selectedConsultation.value
         const roomId = consultation?.janus_room_id
+        const pin = consultation?.janus_pin
         if (roomId && currentUser) {
             await initJanusLib()
-            await iniciarTextRoom(chat.id, roomId, currentUser)
+            await iniciarTextRoom(chat.id, roomId, currentUser, pin)
         }
         lastJanusChatId.value = chat.id
     } catch (error) {

@@ -19,6 +19,7 @@ public record ConsultationResponse(
     @JsonProperty("lawyer") PublicUserResponse lawyer,
     @JsonProperty("scheduled_at") OffsetDateTime scheduledAt,
     @JsonProperty("janus_room_id") Long janusRoomId,
+    @JsonProperty("janus_pin") String janusPin,
     @JsonProperty("created_at") OffsetDateTime createdAt,
     @JsonProperty("updated_at") OffsetDateTime updatedAt
 ) {
@@ -34,6 +35,7 @@ public record ConsultationResponse(
             lawyer == null ? null : PublicUserResponse.from(lawyer),
             c.getScheduledAt(),
             c.getJanusRoomId(),
+            c.getJanusPin(),
             c.getCreatedAt(),
             c.getUpdatedAt()
         );
