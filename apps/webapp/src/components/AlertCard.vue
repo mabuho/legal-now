@@ -13,7 +13,7 @@
         <h2 class="text-2xl font-bold mb-2 text-center"> {{ title }}</h2>
         <p class="text-center mb-6"> {{ message }}</p>
         <button @click="$emit('close-alert')"
-            class="px-6 py-2 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white font-semibold">
+            class="px-6 py-2 rounded-md bg-gradient-to-r from-brand-primary-dark to-brand-accent hover:opacity-90 transition-opacity text-white font-semibold">
             {{ buttonText }}
         </button>
     </div>

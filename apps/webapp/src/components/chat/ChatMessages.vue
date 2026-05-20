@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow p-4 md:p-6 h-full flex flex-col">
+  <div class="bg-surface-card border border-border-default rounded-2xl shadow p-4 md:p-6 h-full flex flex-col">
     <main
       v-if="selectedChat && sessionMessages.length > 0"
       ref="messagesEl"
@@ -13,7 +13,7 @@
         :sender-name="resolveSenderName(msg.sender_id)"
       />
     </main>
-    <div v-else class="flex flex-col items-center justify-center flex-1 text-slate-400 py-8">
+    <div v-else class="flex flex-col items-center justify-center flex-1 text-text-secondary py-8">
       <div class="mb-2">
         <svg fill="currentColor" viewBox="0 0 20 20" class="w-8 h-8 opacity-60">
           <path d="M2 5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H9l-3 3v-3H4a2 2 0 0 1-2-2V5z" />
@@ -131,7 +131,7 @@ const MessageBubble = defineComponent({
               'max-w-[280px] md:max-w-xs p-3 md:p-4 rounded-2xl shadow-lg backdrop-blur-sm',
               props.mine
                 ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
-                : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600',
+                : 'bg-white dark:bg-surface-raised border border-border-subtle dark:border-border-default',
             ],
           },
           [renderContent(props.message)],

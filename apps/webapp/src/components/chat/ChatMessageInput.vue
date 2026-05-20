@@ -1,14 +1,14 @@
 <template>
   <form @submit.prevent="send" ref="formRef"
-    class="bg-slate-800 border border-slate-700 rounded-2xl p-2 flex items-center gap-2 shadow relative">
+    class="bg-surface-raised border border-border-default rounded-2xl p-2 flex items-center gap-2 shadow relative">
     <!-- Input wrapper with clip button inside -->
     <div class="relative flex-1 max-w-[calc(100%-4rem)]">
       <input v-model="message" type="text" placeholder="Escribe un mensaje..."
-        class="w-full bg-slate-900 text-white rounded-lg pr-12 py-2 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-700" />
+        class="w-full bg-surface-card text-white rounded-lg pr-12 py-2 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 border border-border-default" />
       <!-- Clip Icon Button inside input (right side) -->
       <button type="button" ref="clipBtnRef" @click="showModal = !showModal"
-        class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center p-2 rounded-lg hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24"
+        class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center p-2 rounded-lg hover:bg-surface-raised focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-text-muted" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l7.07-7.07a4 4 0 00-5.656-5.657l-7.07 7.07a6 6 0 108.485 8.485l6.364-6.364" />
@@ -127,23 +127,23 @@
       <div class="space-y-4">
         <!-- Caption input -->
         <div>
-          <label class="block text-sm font-medium text-slate-300 mb-2">Mensaje (opcional)</label>
+          <label class="block text-sm font-medium text-text-secondary mb-2">Mensaje (opcional)</label>
           <textarea v-model="fileCaption" placeholder="Agrega un mensaje a tus archivos..."
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            class="w-full bg-surface-raised border border-border-default rounded-lg p-3 text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows="3"></textarea>
         </div>
 
         <!-- File previews -->
         <div class="space-y-3">
           <div v-for="(file, index) in selectedFiles" :key="index"
-            class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg border border-slate-700">
+            class="flex items-center gap-3 p-3 bg-surface-raised rounded-lg border border-border-default">
             <!-- File preview -->
             <div class="flex-shrink-0">
-              <div v-if="file.type.startsWith('image/')" class="w-16 h-16 rounded-lg overflow-hidden bg-slate-700">
+              <div v-if="file.type.startsWith('image/')" class="w-16 h-16 rounded-lg overflow-hidden bg-surface-raised">
                 <img :src="file.preview" :alt="file.name" class="w-full h-full object-cover" />
               </div>
-              <div v-else class="w-16 h-16 rounded-lg bg-slate-700 flex items-center justify-center">
-                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div v-else class="w-16 h-16 rounded-lg bg-surface-raised flex items-center justify-center">
+                <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -152,13 +152,13 @@
 
             <!-- File info -->
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-slate-200 truncate">{{ file.name }}</p>
-              <p class="text-xs text-slate-400">{{ formatFileSize(file.size) }}</p>
+              <p class="text-sm font-medium text-text-secondary truncate">{{ file.name }}</p>
+              <p class="text-xs text-text-muted">{{ formatFileSize(file.size) }}</p>
             </div>
 
             <!-- Delete button -->
             <button @click="removeFile(index)"
-              class="flex-shrink-0 p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+              class="flex-shrink-0 p-2 text-text-muted hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -169,7 +169,7 @@
 
         <!-- Add more files button -->
         <button @click="showModal = true; showPreviewModal = false"
-          class="w-full p-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 hover:text-slate-300 hover:border-slate-500 transition-colors">
+          class="w-full p-3 border-2 border-dashed border-border-default rounded-lg text-text-muted hover:text-text-secondary hover:border-border-default transition-colors">
           <div class="flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -180,7 +180,7 @@
 
         <!-- Send button -->
         <button @click="sendFiles" :disabled="selectedFiles.length === 0"
-          class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors">
+          class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-surface-raised disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors">
           Enviar {{ selectedFiles.length }} archivo{{ selectedFiles.length !== 1 ? 's' : '' }}
         </button>
       </div>
@@ -467,7 +467,7 @@ const AttachmentOption = defineComponent({
     return () => h(
       'button',
       {
-        class: 'flex flex-col items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 p-4 transition-colors',
+        class: 'flex flex-col items-center justify-center rounded-xl bg-surface-raised hover:bg-surface-raised border border-border-default p-4 transition-colors',
         tabindex: 0,
         onClick: () => emit('click', props.icon)
       },

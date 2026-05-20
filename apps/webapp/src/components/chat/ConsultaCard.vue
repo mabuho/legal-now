@@ -38,10 +38,10 @@ const showActions = computed<boolean>(() =>
     </p>
 
     <div v-if="showActions" class="flex gap-2 mt-4">
-      <button @click="onAceptar" class="bg-green-600 text-white px-3 py-1 rounded">
+      <button @click="onAceptar" class="bg-status-active/20 text-status-active px-3 py-1 rounded">
         Aceptar
       </button>
-      <button @click="onRechazar" class="bg-red-600 text-white px-3 py-1 rounded">
+      <button @click="onRechazar" class="bg-status-error/20 text-status-error px-3 py-1 rounded">
         Rechazar
       </button>
     </div>
