@@ -36,13 +36,14 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Gov API integration: SAT (cédula profesional), SEP/RNP (título)
 - ⬜ Verification state machine → set `lawyer_profiles.verified_at`
 
-### Phase 4 — Frontend: Vuetify → Tailwind
-- ⬜ Install Tailwind in `frontend/`
-- ⬜ Migrate landing pages first (lower risk)
-- ⬜ Migrate dashboard layouts
-- ⬜ Migrate chat / video views
-- ⬜ Remove Vuetify dependency
-- ⬜ Remove radix-vue dependency if redundant
+### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution
+- ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
+- ⬜ Landing: refactor Home.vue (hero centrado, nav, secciones, footer)
+- ⬜ Auth: LoginView + RegisterView con tokens
+- ⬜ Dashboard layout + routing (nav Consultas/Historial, btn Nueva)
+- ⬜ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory)
+- ⬜ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav
+- ⬜ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register
 
 ---
 
