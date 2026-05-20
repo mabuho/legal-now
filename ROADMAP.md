@@ -18,12 +18,14 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 ## 📋 Backlog
 
 ### Phase 7 — AI matching / triage engine
+
 - ⬜ Define matching algorithm (specialization + availability + rating + price)
 - ⬜ Replace `legalTriage.ts` bot stub with real triage service
 - ⬜ Wire matching to `consultations` creation flow
 - ⬜ Track lawyer ratings (new table)
 
 ### Phase 6 — Payments (Stripe Connect + Mercado Pago) _(requires Phase 5 lawyer verification)_
+
 - ⬜ Stripe Connect onboarding for lawyers (payouts)
 - ⬜ Stripe Checkout for client payments
 - ⬜ Webhooks handling (idempotent, signature-verified)
@@ -31,16 +33,18 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Refund flow
 
 ### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
+
 - ⬜ Document upload endpoints + storage (S3 or similar)
 - ⬜ New tables: `lawyer_documents`, `verification_attempts` (Flyway V4+)
 - ⬜ Gov API integration: SAT (cédula profesional), SEP/RNP (título)
 - ⬜ Verification state machine → set `lawyer_profiles.verified_at`
 
 ### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution
+
 - ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
 - ✅ Landing: refactor Home.vue (hero centrado, nav, secciones, footer) — PR #8
 - ✅ Auth: LoginView + RegisterView con tokens — PR #8
-- ⬜ Dashboard layout + routing (nav Consultas/Historial, btn Nueva)
+- ✅ Dashboard layout + routing (nav Consultas/Historial, btn Nueva) — PR #9
 - ⬜ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory)
 - ⬜ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav
 - ⬜ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register
@@ -56,6 +60,7 @@ _(nothing active)_
 ## ✅ Done
 
 ### Phase 2 — Migrate Redis-API → Java _(completed 2026-05-19)_
+
 - ✅ Build `com.legalnow.api.consultation` module (entity, repo, service, controller, DTOs, state machine)
 - ✅ Build `com.legalnow.api.chat` module (ChatSession + ChatMessage entities, repos, services, controller, DTOs)
 - ✅ Authorization helper: principal must be client/lawyer of consultation (or admin)
@@ -81,6 +86,7 @@ _(nothing active)_
 - ✅ `initJanusLib.ts` + `initTextRoomPerChat.ts` (→ `janusService.ts`) `saveChatMessage` fixed — Phase 3 PR #3
 
 ### Phase 3 — Janus room admin → Java _(merged PR #3, 2026-05-19)_
+
 - ✅ Build Janus Admin API client in `com.legalnow.api.janus` (`JanusProperties`, `JanusClient`, `JanusService`)
 - ✅ Wire `JanusService` into `ConsultationService` — room created on consultation
 - ✅ Persist `janus_room_id` in `consultations` table on creation
@@ -89,6 +95,7 @@ _(nothing active)_
 - ✅ Issue short-lived Janus room pins from Java — generated on `IN_PROGRESS` transition, stored in `consultations.janus_pin`, exposed in `ConsultationResponse`, frontend passes in join payload
 
 ### Phase 1 — Java REST API base
+
 - ✅ Spring Boot 3.3.5 Maven scaffold at `backend/api/`
 - ✅ Postgres 16 + Flyway integration (V1 init schema, V2 specializations seed)
 - ✅ Docker compose: `postgres` + `api` services
