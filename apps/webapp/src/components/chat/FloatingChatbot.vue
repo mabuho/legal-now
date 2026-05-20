@@ -110,9 +110,9 @@ const sendMessage = async () => {
             <!-- Bot Avatar -->
             <div
               v-if="msg.sender === 'bot'"
-              class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center"
+              class="flex-shrink-0 h-8 w-8 rounded-full bg-brand-accent/10 dark:bg-brand-accent/20 flex items-center justify-center"
             >
-              <ChatBubbleLeftRightIcon class="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <ChatBubbleLeftRightIcon class="h-5 w-5 text-brand-accent" />
             </div>
 
             <div class="flex flex-col max-w-[80%]">
@@ -120,7 +120,7 @@ const sendMessage = async () => {
               <div
                 class="rounded-lg px-4 py-2"
                 :class="{
-                  'bg-indigo-600 text-white': msg.sender === 'user',
+                  'bg-brand-accent text-white': msg.sender === 'user',
                   'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white': msg.sender === 'bot'
                 }"
               >
@@ -134,7 +134,7 @@ const sendMessage = async () => {
               >
                 <button
                   @click="handleSuggestedAction(msg)"
-                  class="inline-flex items-center space-x-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+                  class="inline-flex items-center space-x-2 text-sm text-brand-accent hover:text-indigo-500"
                 >
                   <ArrowTopRightOnSquareIcon class="h-4 w-4" />
                   <span>Ver abogados disponibles</span>
@@ -164,8 +164,8 @@ const sendMessage = async () => {
 
           <!-- Typing Indicator -->
           <div v-if="isTyping" class="flex items-center space-x-2">
-            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-              <ChatBubbleLeftRightIcon class="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-brand-accent/10 dark:bg-brand-accent/20 flex items-center justify-center">
+              <ChatBubbleLeftRightIcon class="h-5 w-5 text-brand-accent" />
             </div>
             <div class="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2">
               <div class="flex space-x-1">
@@ -185,12 +185,12 @@ const sendMessage = async () => {
             v-model="message"
             type="text"
             placeholder="Escribe tu mensaje..."
-            class="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="flex-1 rounded-lg border border-border-default bg-white dark:bg-surface-raised px-4 py-2 text-sm text-text-primary placeholder-text-muted focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
             @keyup.enter="sendMessage"
           />
           <button
             @click="sendMessage"
-            class="inline-flex items-center justify-center rounded-lg bg-indigo-600 p-2 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="inline-flex items-center justify-center rounded-lg bg-brand-accent p-2 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2"
           >
             <PaperAirplaneIcon class="h-5 w-5" />
           </button>

@@ -2,13 +2,13 @@
   <div class="flex flex-col h-full">
     <div class="flex-1 overflow-y-auto p-2 md:p-4 space-y-3">
       <div v-for="session in chats" :key="session.id" @click="$emit('selectChat', session)"
-        class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-2 cursor-pointer shadow hover:shadow-lg transition-all duration-150 hover:bg-slate-700 flex items-center gap-3"
-        :class="selectedChat && selectedChat.id === session.id ? 'ring-2 ring-cyan-500' : ''">
+        class="bg-surface-raised border border-border-default rounded-xl p-4 mb-2 cursor-pointer shadow hover:shadow-lg transition-all duration-150 hover:bg-surface-raised flex items-center gap-3"
+        :class="selectedChat && selectedChat.id === session.id ? 'ring-2 ring-brand-primary/50' : ''">
         <div class="flex-1 min-w-0">
-          <span class="block font-semibold text-slate-100 truncate">
+          <span class="block font-semibold text-text-primary truncate">
             {{ resolveCounterpartName(session) }}
           </span>
-          <p class="text-xs text-slate-400 truncate">
+          <p class="text-xs text-text-secondary truncate">
             {{ formatSessionDate(session.started_at) }}
           </p>
         </div>

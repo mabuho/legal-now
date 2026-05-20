@@ -1,11 +1,11 @@
 <template>
     <transition name="fade">
         <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div class="relative w-full max-w-md mx-auto bg-slate-900 text-slate-100 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col min-h-[60vh] md:min-h-0 md:w-[400px]"
+            <div class="relative w-full max-w-md mx-auto bg-surface-card text-text-primary rounded-2xl shadow-lg p-6 md:p-8 flex flex-col min-h-[60vh] md:min-h-0 md:w-[400px]"
                 :class="{ 'h-full rounded-none md:rounded-2xl': isMobile }">
                 <!-- Close (X) Button -->
                 <button @click="handleClose"
-                    class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 text-2xl">
+                    class="absolute top-4 right-4 text-text-secondary hover:text-text-primary text-2xl">
                     &times;
                 </button>
                 <!-- Optional header slot -->
