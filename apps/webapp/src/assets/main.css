@@ -58,7 +58,6 @@ hide-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
-
 .max-h-req-list {
   height: 15rem;
   max-height: 30vh;
