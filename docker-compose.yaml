@@ -72,7 +72,7 @@ services:
       SPRING_DATASOURCE_USERNAME: legalnow
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-legalnow}
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-please-override-in-production-min-32-bytes-12345678}
-      JANUS_API_URL: http://janus-server:8088
+      JANUS_API_URL: http://janus-server:8088/janus
       JANUS_ADMIN_SECRET: ${JANUS_ADMIN_SECRET:-janusoverlord}
     # TODO: Agregar health check para que webapp dependa en este servicio.
     depends_on:
