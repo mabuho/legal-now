@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,6 +36,8 @@ import com.legalnow.api.common.exception.ForbiddenException;
 import com.legalnow.api.consultation.dto.ConsultationResponse;
 import com.legalnow.api.consultation.dto.CreateConsultationRequest;
 import com.legalnow.api.consultation.dto.StatusTransitionRequest;
+import com.legalnow.api.janus.JanusRoomCreationException;
+import com.legalnow.api.janus.JanusService;
 import com.legalnow.api.user.Role;
 import com.legalnow.api.user.User;
 import com.legalnow.api.user.UserRepository;
@@ -66,6 +72,9 @@ class ConsultationServiceTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private JanusService janusService;
 
     private User client;
     private User lawyer;
@@ -163,6 +172,66 @@ class ConsultationServiceTest {
             created.id(),
             new StatusTransitionRequest(ConsultationStatus.IN_PROGRESS, null)
         ));
+    }
+
+    @Test
+    void scheduledToInProgress_allocatesJanusRoom() {
+        authenticate(client.getId(), Role.CLIENT);
+        ConsultationResponse created = consultationService.create(new CreateConsultationRequest(
+            lawyer.getId(), "Help me", null, null
+        ));
+
+        authenticate(lawyer.getId(), Role.LAWYER);
+        consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.ACCEPTED, null)
+        );
+        consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.SCHEDULED, null)
+        );
+
+        long mockRoomId = 12345L;
+        when(janusService.allocateRooms(eq(created.id()))).thenReturn(mockRoomId);
+
+        ConsultationResponse inProgress = consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.IN_PROGRESS, null)
+        );
+
+        assertEquals("in_progress", inProgress.status());
+        assertEquals(mockRoomId, inProgress.janusRoomId());
+        verify(janusService).allocateRooms(eq(created.id()));
+    }
+
+    @Test
+    void scheduledToInProgress_janusFailure_rollsBackTransition() {
+        authenticate(client.getId(), Role.CLIENT);
+        ConsultationResponse created = consultationService.create(new CreateConsultationRequest(
+            lawyer.getId(), "Help me", null, null
+        ));
+
+        authenticate(lawyer.getId(), Role.LAWYER);
+        consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.ACCEPTED, null)
+        );
+        consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.SCHEDULED, null)
+        );
+
+        when(janusService.allocateRooms(eq(created.id())))
+            .thenThrow(new JanusRoomCreationException("Janus is down"));
+
+        assertThrows(JanusRoomCreationException.class, () -> consultationService.transition(
+            created.id(),
+            new StatusTransitionRequest(ConsultationStatus.IN_PROGRESS, null)
+        ));
+
+        Consultation reloaded = consultationRepository.findById(created.id()).orElseThrow();
+        assertEquals(ConsultationStatus.SCHEDULED, reloaded.getStatus());
+        assertNotNull(reloaded.getJanusRoomId() == null);
     }
 
     private void authenticate(UUID userId, Role role) {

@@ -20,9 +20,6 @@ export const useJanusSessionStore = defineStore('janusSessions', {
             return this.sessions[chatId];
         },
         removeSession(chatId: string) {
-            if (this.sessions[chatId]?.janus.value) {
-                this.sessions[chatId].janus.value.destroy();
-            }
             delete this.sessions[chatId];
         },
         listChatIds() {

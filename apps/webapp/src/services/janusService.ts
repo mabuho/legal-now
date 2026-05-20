@@ -5,8 +5,7 @@ import { ChatMessageType, type ChatMessage } from '@/types/chat';
 const server = import.meta.env.VITE_JANUS_WSS
 //const janusSecre = import.meta.env.VITE_JANUS_API_SECRET
 const iceServers = null
-const debugLevel = 'all' // útil en pruebas
-const plugin = 'janus.plugin.textroom'
+const debugLevel = 'all' // útil en pruebas
 let janus: any = null
 const Janus = (window as any).Janus
 
@@ -141,7 +140,7 @@ export const iniciarTextRoom = async (
                     import('@/stores/chatSessionStore')
                         .then(({ useChatSessionStore }) => {
                             const chatStore = useChatSessionStore()
-                            chatStore.saveChatMessage(chatId, chatMessage, false)
+                            chatStore.appendIncomingMessage(chatId, chatMessage)
                         })
                 },
                 oncleanup: () => {
@@ -149,62 +148,6 @@ export const iniciarTextRoom = async (
                 },
             });
         }
-    })
-}
-
-// Crear sala si no existe
-export const crearSalaTextRoom = async (
-    roomId: number,
-    options?: {
-        description?: string,
-        permanent?: boolean
-    }
-): Promise<void> => {
-    return new Promise((resolve, reject) => {
-        console.log('[Janus_Init] create sala:', roomId, options)
-        janus = new Janus({
-            server,
-            iceServers,
-            success: () => {
-                console.log('[JanusInit] init janus', janus)
-                janus.attach({
-                    plugin: 'janus.plugin.textroom',
-                    success: (plugin: any) => {
-                        const message = {
-                            request: 'create',
-                            room: roomId,
-                            description: options?.description || `Sala ${roomId}`,
-                            permanent: options?.permanent || false
-                        }
-                        plugin.send({
-                            message,
-                            success: () => {
-                                console.log('[Janus_Init] sala creada: ', roomId)
-                                resolve()
-                            },
-                            error: (err: any) => {
-                                console.log('[JAnus_Init] error:', err)
-                                const msg = err.error || JSON.stringify(err)
-                                if (msg.includes('already exists')) {
-                                    //plugin.detach()
-                                    //resolve()
-                                } else {
-                                    console.log('[Janus_Init] error:', err)
-                                    //reject(err)
-                                }
-                            }
-                        })
-                    },
-                    error: (err: any) => {
-                        console.log('[JAnus_Init] error:', err)
-                        //reject(err)
-                    }
-                })
-            },
-            error: (err: any) => {
-                console.log('[Janus_Init] error', err)
-            }
-        })
     })
 }
 
@@ -227,5 +170,10 @@ export const enviarMensajeTextRoomPorChat = (chatId: string, content: any) => {
 
 export const cerrarSesionTextRoomChat = (chatId: string) => {
     const store = useJanusSessionStore();
+    const session = store.getSession(chatId);
+    if (session) {
+        try { session.plugin?.detach(); } catch (_) {}
+        try { session.janus?.destroy(); } catch (_) {}
+    }
     store.removeSession(chatId);
 };

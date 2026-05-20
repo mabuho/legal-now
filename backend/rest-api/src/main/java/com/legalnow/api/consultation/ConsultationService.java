@@ -21,6 +21,7 @@ import com.legalnow.api.consultation.dto.ConsultationResponse;
 import com.legalnow.api.consultation.dto.CreateConsultationRequest;
 import com.legalnow.api.consultation.dto.StatusTransitionRequest;
 import com.legalnow.api.consultation.dto.UpdateConsultationRequest;
+import com.legalnow.api.janus.JanusService;
 import com.legalnow.api.user.Role;
 import com.legalnow.api.user.User;
 import com.legalnow.api.user.UserRepository;
@@ -33,13 +34,16 @@ public class ConsultationService {
 
     private final ConsultationRepository consultationRepository;
     private final UserRepository userRepository;
+    private final JanusService janusService;
 
     public ConsultationService(
         ConsultationRepository consultationRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        JanusService janusService
     ) {
         this.consultationRepository = consultationRepository;
         this.userRepository = userRepository;
+        this.janusService = janusService;
     }
 
     @Transactional
@@ -167,6 +171,11 @@ public class ConsultationService {
 
         if (!admin) {
             authorizeTransition(from, to, isClient, isLawyer);
+        }
+
+        if (to == ConsultationStatus.IN_PROGRESS && c.getJanusRoomId() == null) {
+            long roomId = janusService.allocateRooms(c.getId());
+            c.setJanusRoomId(roomId);
         }
 
         c.setStatus(to);

@@ -32,3 +32,6 @@ app:
   cors:
     allowed-origins:
       - http://localhost:5173
+  janus:
+    api-url: ${JANUS_API_URL:http://janus-server:8088/janus}
+    admin-secret: ${JANUS_ADMIN_SECRET:janusoverlord}
