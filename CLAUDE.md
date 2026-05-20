@@ -232,3 +232,25 @@ Janus → volumen compartido (grabaciones) → contenedor Whisper → transcripc
 ```
 
 Whisper corre loop polling contra volumen grabaciones Janus. Transcripciones quedan disponibles post-consulta.
+
+---
+
+## Preferencias
+
+- Utiliza siempre la salida comprimida al delegar tareas a subagentes.
+- Por defecto, proporcione respuestas técnicas y concisas.
+
+---
+
+# Configuraciones de Agentes
+
+Delegar a subagente según tarea:
+
+```
+task: [descripción]
+scope: [investigator | builder | reviewer]
+compressed output: yes
+```
+
+- [builder, reviewer]: `claude-sonnet-4-6` (mejor calidad)
+- [investigator]: `claude-haiku-4-5` (velocidad + eficiencia tokens)
