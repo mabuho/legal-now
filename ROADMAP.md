@@ -45,7 +45,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Landing: refactor Home.vue (hero centrado, nav, secciones, footer) — PR #8
 - ✅ Auth: LoginView + RegisterView con tokens — PR #8
 - ✅ Dashboard layout + routing (nav Consultas/Historial, btn Nueva) — PR #9
-- ⬜ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory)
+- ✅ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory) — PR #10
 - ⬜ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav
 - ⬜ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register
 

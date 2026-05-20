@@ -1,24 +1,22 @@
 <template>
-    <div class="bg-gradient-to-br from-cyan-950 via-blue-950 to-indigo-950 px-4 py-8 md:h-[calc(100vh-4rem)]">
-        <div class="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-8 h-full min-h-0">
-            <!-- Chat List -->
-            <div class="lg:col-span-1 flex flex-col gap-4 h-full min-h-0">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow p-4 md:p-6 flex-1 flex flex-col">
-                    <ChatListHeader />
-                    <ChatList :chats="chatStore.sessions" :consultations="consultations" :selected-chat="selectedChat" @selectChat="selectChat" />
-                </div>
+    <div class="flex h-[calc(100vh-3.5rem)] bg-surface-base overflow-hidden">
+        <!-- Chat List -->
+        <div class="w-80 flex-shrink-0 border-r border-border-subtle flex flex-col bg-surface-base">
+            <div class="bg-surface-base flex-1 flex flex-col overflow-hidden">
+                <ChatListHeader />
+                <ChatList :chats="chatStore.sessions" :consultations="consultations" :selected-chat="selectedChat" @selectChat="selectChat" />
             </div>
-            <!-- Chat Area -->
-            <div class="lg:col-span-2 flex flex-col gap-4 h-full min-h-0">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow p-4 md:p-6 flex flex-col h-full">
-                    <ChatMessageHeader v-if="selectedChat" :selected-chat="selectedChat" :consultation="selectedConsultation" :can-call="canCall"
-                        @goBack="goBackToChatList" />
-                    <div class="flex-1 min-h-0 overflow-y-auto">
-                        <ChatMessages v-if="selectedChat" :selected-chat="selectedChat" :consultation="selectedConsultation" :messages="chatMessages" />
-                    </div>
-                    <ChatMessageInput v-if="selectedChat" :chat="selectedChat" @sendMessage="handleSendMessage"
-                        @sendFiles="handleSendFiles" />
+        </div>
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col bg-surface-base overflow-hidden">
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <ChatMessageHeader v-if="selectedChat" :selected-chat="selectedChat" :consultation="selectedConsultation" :can-call="canCall"
+                    @goBack="goBackToChatList" />
+                <div class="flex-1 min-h-0 overflow-y-auto">
+                    <ChatMessages v-if="selectedChat" :selected-chat="selectedChat" :consultation="selectedConsultation" :messages="chatMessages" />
                 </div>
+                <ChatMessageInput v-if="selectedChat" :chat="selectedChat" @sendMessage="handleSendMessage"
+                    @sendFiles="handleSendFiles" />
             </div>
         </div>
     </div>
@@ -43,7 +41,7 @@ import ChatMessageHeader from '@/components/chat/ChatMessageHeader.vue'
 import ChatMessageInput from '@/components/chat/ChatMessageInput.vue'
 import {
     type Consultation,
-    type ChatSession, // A Chat
+    type ChatSession,
     ConsultationStatus,
 } from '@/types/chat'
 import ChatListHeader from '@/components/chat/ChatListHeader.vue';
@@ -91,7 +89,6 @@ watch(selectedChat, (chat) => {
     else stopMessagePolling()
 })
 
-// Responsive state
 const isMobile = ref(window.innerWidth < 768)
 
 function handleResize() {
@@ -139,7 +136,6 @@ async function selectChat(chat: ChatSession) {
         }
         canCall.value = chat.ended_at == null
 
-        // Cierra la sesión Janus del chat anterior si existe
         if (lastJanusChatId.value && lastJanusChatId.value !== chat.id) {
             cerrarSesionJanus()
         }
@@ -186,36 +182,3 @@ const handleSendFiles = async (_filesData: { files: File[], caption: string }) =
     console.warn('[handleSendFiles] TODO: Phase 5 — file upload not yet wired to API')
 }
 </script>
-
-<style scoped>
-/* Estilos específicos si son necesarios */
-.h-screen {
-    height: 87vh !important;
-}
-
-/* Estilos específicos para mobile */
-@media (max-width: 768px) {
-    .h-screen {
-        height: 87vh;
-        height: 87dvh;
-        /* Dynamic viewport height para mobile */
-    }
-}
-
-/* Mejorar scroll en mobile */
-.overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Asegurar que los botones sean fáciles de tocar en mobile */
-button {
-    min-height: 44px;
-    /* Tamaño mínimo recomendado para touch */
-}
-
-/* Mejorar el input en mobile */
-input {
-    font-size: 16px;
-    /* Evita zoom en iOS */
-}
-</style>
