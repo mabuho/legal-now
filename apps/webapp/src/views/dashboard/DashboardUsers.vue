@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useConsultationStore } from '@/stores/consultationStore'
 import { useChatSessionStore } from '@/stores/chatSessionStore'
-import AIAssistantChat from '@/components/chat/AIAssistantChat.vue'
 import BaseModal from '@/components/BaseModal.vue'
 import AlertCard from '@/components/AlertCard.vue'
 import PaymentConfirmation from '@/components/PaymentConfirmation.vue'
@@ -16,10 +15,8 @@ const auth = useAuthStore()
 const cons = useConsultationStore()
 const chat = useChatSessionStore()
 
-// Loading state
 const loading = ref(false)
 
-// Tab state
 type RequestTab = 'active' | 'completed' | 'rejected'
 const selectedTab = ref<RequestTab>('active')
 const tabs: { key: RequestTab; label: string }[] = [
@@ -90,7 +87,10 @@ const chatInput = ref('')
 const paymentModalVisible = ref(false)
 const deleteRequestModalVisible = ref(false)
 
-// Prevent background scroll when modals are open
+// Master-detail selection
+const selectedConsultationId = ref<string | null>(null)
+const selectedDetail = computed(() => cons.consultations.find(c => c.id === selectedConsultationId.value) ?? null)
+
 watch([paymentModalVisible, deleteRequestModalVisible], ([payment, deleteReq]) => {
   if (typeof document !== 'undefined') {
     document.body.classList.toggle('overflow-hidden', payment || deleteReq)
@@ -113,10 +113,13 @@ const stubMessages = ref([
   },
 ])
 
-// Helpers
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })
+}
+
 function statusLabel(status: ConsultationStatus): string {
   const labels: Record<ConsultationStatus, string> = {
-    [ConsultationStatus.PENDING]: 'Pendiente de aceptacion',
+    [ConsultationStatus.PENDING]: 'Pendiente',
     [ConsultationStatus.ACCEPTED]: 'Aceptada',
     [ConsultationStatus.SCHEDULED]: 'Programada',
     [ConsultationStatus.IN_PROGRESS]: 'En curso',
@@ -129,19 +132,14 @@ function statusLabel(status: ConsultationStatus): string {
 
 function statusBadgeClass(status: ConsultationStatus): string {
   switch (status) {
-    case ConsultationStatus.PENDING:
-      return 'bg-orange-600 text-white'
+    case ConsultationStatus.PENDING: return 'bg-status-payment/10 text-status-payment border border-status-payment/20'
     case ConsultationStatus.ACCEPTED:
-    case ConsultationStatus.SCHEDULED:
-      return 'bg-blue-600 text-white'
-    case ConsultationStatus.IN_PROGRESS:
-    case ConsultationStatus.COMPLETED:
-      return 'bg-green-600 text-white'
+    case ConsultationStatus.SCHEDULED: return 'bg-brand-primary/10 text-brand-primary border border-brand-primary/20'
+    case ConsultationStatus.IN_PROGRESS: return 'bg-status-active/10 text-status-active border border-status-active/20'
+    case ConsultationStatus.COMPLETED: return 'bg-surface-raised text-text-muted border border-border-default'
     case ConsultationStatus.REJECTED:
-    case ConsultationStatus.CANCELLED:
-      return 'bg-red-500 text-white'
-    default:
-      return 'bg-slate-700 text-slate-300'
+    case ConsultationStatus.CANCELLED: return 'bg-status-error/10 text-status-error border border-status-error/20'
+    default: return 'bg-surface-raised text-text-muted border border-border-default'
   }
 }
 
@@ -150,28 +148,29 @@ function hasChatSession(consultationId: string): boolean {
 }
 
 function goToChat(consultation: Consultation) {
-  // Navigate to chat panel; ChatPanel will select the right session.
-  // Future: pass consultation id via query string so ChatPanel pre-selects.
   router.push({ path: '/dashboard/chat', query: { consultation_id: consultation.id } })
 }
 
 async function cancelActive() {
-  if (!activeConsultation.value) return
+  if (!selectedDetail.value) return
   deleteRequestModalVisible.value = false
-  await cons.cancel(activeConsultation.value.id)
+  await cons.cancel(selectedDetail.value.id)
   await cons.fetchMine({ role: 'client', size: 50 })
 }
 
-// Redirect to landing AI flow — no in-dashboard consultation creation
 function onNewConsult() {
   router.push('/')
 }
 
 // TODO: Phase 6 — wire stub message send to triage service
 function sendStubMessage() {
-  // no-op for now
   chatInput.value = ''
 }
+
+const pendingList = computed(() => cons.consultations.filter(c => c.status === ConsultationStatus.PENDING))
+const activeList = computed(() => cons.consultations.filter(c =>
+  [ConsultationStatus.ACCEPTED, ConsultationStatus.SCHEDULED, ConsultationStatus.IN_PROGRESS].includes(c.status)
+))
 
 onMounted(async () => {
   if (!auth.user) return
@@ -185,168 +184,138 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-cyan-950 via-blue-950 to-indigo-950 px-4 py-8 md:h-[calc(100vh-4rem)]">
-    <div class="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-8 h-full min-h-0">
-      <!-- Main Column -->
-      <div class="lg:col-span-2 flex flex-col gap-4 h-full min-h-0 pr-0 lg:pr-2">
+  <div class="flex h-[calc(100vh-3.5rem)] bg-surface-base overflow-hidden">
+    <!-- Loading overlay -->
+    <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-surface-base z-10">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+    </div>
 
-        <!-- Loading state -->
-        <div v-if="loading" class="flex items-center justify-center py-12">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
-        </div>
+    <!-- LEFT: consultation list -->
+    <div class="w-80 flex-shrink-0 border-r border-border-subtle flex flex-col bg-surface-base overflow-y-auto">
+      <div class="px-4 pt-5 pb-3">
+        <p class="font-body text-xs font-bold text-text-muted uppercase tracking-widest">Mis consultas</p>
+      </div>
 
-        <template v-else>
-          <!-- Consulta Activa Card -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow p-4 md:p-8 md:mb-4 lg:mb-0">
-            <h2 class="text-xl font-bold font-montserrat text-slate-100 mb-6 flex items-center gap-2">
-              <span class="inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
-                  <circle cx="12" cy="12" r="10" />
-                </svg>
-              </span>
-              Consulta Activa
-            </h2>
-
-            <!-- Empty state -->
-            <div v-if="!activeConsultation"
-              class="bg-slate-800 rounded-xl p-8 flex flex-col items-center justify-center border border-slate-700 gap-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-slate-600" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <p class="text-slate-400 font-manrope text-center">No tienes consultas activas</p>
-              <button @click="router.push('/')"
-                class="px-5 py-2 rounded-md bg-gradient-to-br from-cyan-600 via-indigo-700 to-blue-900 text-white font-semibold font-manrope transition-colors">
-                Iniciar nueva consulta
-              </button>
-            </div>
-
-            <!-- Active consultation details -->
-            <div v-else class="bg-slate-800 rounded-xl p-6 flex flex-col items-center justify-center border border-slate-700">
-              <div class="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div class="text-xl md:text-3xl lg:text-3xl font-bold text-slate-100 font-manrope">
-                    {{ activeConsultation.title }}
-                  </div>
-                  <div class="text-sm md:text-base lg:text-xl text-slate-400 font-manrope mb-1">
-                    Abogado: {{ activeConsultation.lawyer.name }}
-                  </div>
-                  <div class="text-sm md:text-base lg:text-xl text-slate-400 font-manrope mb-1">
-                    Creada: {{ new Date(activeConsultation.created_at).toLocaleDateString() }}
-                  </div>
-                </div>
-                <div class="text-center md:text-right">
-                  <span :class="['px-3 py-1 rounded-full text-xs font-bold font-manrope', statusBadgeClass(activeConsultation.status)]">
-                    {{ statusLabel(activeConsultation.status) }}
-                  </span>
-                  <div class="flex gap-2 justify-center md:justify-end mt-4 flex-wrap">
-                    <!-- Ir al chat — only when a session exists and status allows it -->
-                    <button
-                      v-if="hasChatSession(activeConsultation.id) && [ConsultationStatus.ACCEPTED, ConsultationStatus.SCHEDULED, ConsultationStatus.IN_PROGRESS].includes(activeConsultation.status)"
-                      @click="goToChat(activeConsultation)"
-                      class="px-5 py-2 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white font-semibold font-manrope transition-colors">
-                      Ir al chat
-                    </button>
-                    <!-- Pagar — disabled, Phase 5 placeholder -->
-                    <button disabled
-                      title="Proximo (Fase 5)"
-                      class="px-5 py-2 rounded-md bg-green-800 text-green-400 font-semibold font-manrope cursor-not-allowed opacity-60">
-                      <!-- TODO: Phase 5 — enable when payments API is ready -->
-                      Pagar
-                    </button>
-                    <!-- Cancelar — only for cancellable statuses -->
-                    <button
-                      v-if="[ConsultationStatus.PENDING, ConsultationStatus.ACCEPTED].includes(activeConsultation.status)"
-                      @click="deleteRequestModalVisible = true"
-                      class="px-5 py-2 rounded-md border bg-red-600 hover:bg-red-700 text-white font-semibold font-manrope transition-colors">
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
+      <!-- Pendiente de autorización -->
+      <div class="mb-2">
+        <p class="font-body text-xs font-bold text-text-muted uppercase tracking-widest px-4 pb-2">
+          Pendiente de autorización
+        </p>
+        <template v-if="pendingList.length > 0">
+          <div
+            v-for="c in pendingList"
+            :key="c.id"
+            :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
+              selectedConsultationId === c.id
+                ? 'bg-surface-card border-brand-primary/40 shadow-glow'
+                : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
+            @click="selectedConsultationId = c.id"
+          >
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0">
+                <p class="font-heading font-semibold text-sm text-text-primary truncate">{{ c.title }}</p>
+                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}</p>
               </div>
-            </div>
-          </div>
-
-          <!-- Historial de consultas Card -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow p-4 md:p-8 md:mb-4 lg:mb-0">
-            <h2 class="text-xl font-bold font-montserrat text-slate-100 mb-6 flex items-center gap-2">
-              <span class="inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
-                  <circle cx="12" cy="12" r="10" />
-                </svg>
+              <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
+                {{ statusLabel(c.status) }}
               </span>
-              Historial de consultas
-            </h2>
-
-            <!-- Tabs -->
-            <div class="flex gap-2 mb-6">
-              <button v-for="tab in tabs" :key="tab.key" @click="selectedTab = tab.key"
-                :class="['px-4 py-2 rounded-full font-manrope text-sm font-semibold transition',
-                  selectedTab === tab.key ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700']">
-                {{ tab.label }}
-              </button>
-            </div>
-
-            <!-- Requests list -->
-            <div class="flex-col justify-end">
-              <div class="flex flex-col gap-4 max-h-req-list overflow-y-auto hide-scrollbar">
-
-                <!-- Empty state per tab -->
-                <div v-if="filteredRequests.length === 0"
-                  class="text-slate-500 font-manrope text-sm text-center py-8">
-                  No hay consultas en esta categoria
-                </div>
-
-                <div
-                  v-for="request in filteredRequests"
-                  :key="request.id"
-                  :class="['flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl p-4 transition',
-                    tabStatuses.active.includes(request.status) && hasChatSession(request.id)
-                      ? 'cursor-pointer hover:bg-slate-700'
-                      : 'cursor-not-allowed']"
-                  @click="tabStatuses.active.includes(request.status) && hasChatSession(request.id) ? goToChat(request) : undefined">
-                  <div>
-                    <div class="text-base font-semibold text-slate-100 font-manrope">{{ request.title }}</div>
-                    <div class="text-xs text-slate-400 font-manrope">Abogado: {{ request.lawyer.name }}</div>
-                    <div class="text-xs text-slate-400 font-manrope">
-                      Fecha: {{ new Date(request.created_at).toLocaleDateString() }}
-                    </div>
-                  </div>
-                  <div class="flex flex-col items-end gap-2">
-                    <span :class="['px-3 py-1 rounded-full text-xs font-bold font-manrope', statusBadgeClass(request.status)]">
-                      {{ statusLabel(request.status) }}
-                    </span>
-                    <span class="inline-block">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </template>
+        <p v-else class="font-body text-xs text-text-muted text-center py-3 px-3">Sin consultas</p>
       </div>
 
-      <!-- Sidebar: AI Assistant -->
-      <div class="hidden lg:flex flex-col h-full min-h-0 md:mt-4 lg:mt-0">
-        <!-- TODO: Phase 6 — wire real AI triage chat here -->
-        <AIAssistantChat
-          :chatMessages="stubMessages"
-          :chatInput="chatInput"
-          @update:chatInput="val => chatInput = val"
-          @send="sendStubMessage"
-          @new-consult="onNewConsult"
-        />
+      <!-- En Curso -->
+      <div class="mb-2">
+        <p class="font-body text-xs font-bold text-text-muted uppercase tracking-widest px-4 pb-2">
+          En curso
+        </p>
+        <template v-if="activeList.length > 0">
+          <div
+            v-for="c in activeList"
+            :key="c.id"
+            :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
+              selectedConsultationId === c.id
+                ? 'bg-surface-card border-brand-primary/40 shadow-glow'
+                : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
+            @click="selectedConsultationId = c.id"
+          >
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0">
+                <p class="font-heading font-semibold text-sm text-text-primary truncate">{{ c.title }}</p>
+                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}</p>
+              </div>
+              <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
+                {{ statusLabel(c.status) }}
+              </span>
+            </div>
+          </div>
+        </template>
+        <p v-else class="font-body text-xs text-text-muted text-center py-3 px-3">Sin consultas</p>
       </div>
+    </div>
+
+    <!-- RIGHT: detail panel -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Empty state -->
+      <div v-if="!selectedDetail" class="flex-1 flex flex-col items-center justify-center gap-4 text-center p-8">
+        <div class="w-16 h-16 rounded-card bg-surface-card border border-border-default flex items-center justify-center">
+          <svg class="w-8 h-8 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1M3 12h1m16 0h1M5.636 5.636l.707.707M17.657 17.657l.707.707M5.636 18.364l.707-.707M17.657 6.343l.707-.707M9 12a3 3 0 106 0 3 3 0 00-6 0z" />
+          </svg>
+        </div>
+        <p class="font-heading font-semibold text-text-secondary">Selecciona una consulta</p>
+        <p class="font-body text-sm text-text-muted max-w-xs">Elige una consulta de la lista para ver el detalle y acceder al chat</p>
+      </div>
+
+      <!-- Detail -->
+      <template v-else>
+        <!-- Header bar -->
+        <div class="px-6 py-4 border-b border-border-subtle bg-surface-raised flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h2 class="font-heading font-semibold text-text-primary truncate">{{ selectedDetail.title }}</h2>
+            <p class="font-body text-sm text-text-muted mt-0.5">{{ selectedDetail.lawyer.name }} · {{ formatDate(selectedDetail.created_at) }}</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag', statusBadgeClass(selectedDetail.status)]">
+              {{ statusLabel(selectedDetail.status) }}
+            </span>
+            <button
+              v-if="hasChatSession(selectedDetail.id) && [ConsultationStatus.ACCEPTED, ConsultationStatus.SCHEDULED, ConsultationStatus.IN_PROGRESS].includes(selectedDetail.status)"
+              @click="goToChat(selectedDetail)"
+              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white shadow-glow-btn hover:opacity-90 transition-opacity"
+            >
+              Abrir chat →
+            </button>
+            <button
+              v-if="[ConsultationStatus.PENDING, ConsultationStatus.ACCEPTED].includes(selectedDetail.status)"
+              @click="deleteRequestModalVisible = true"
+              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn border border-status-error/40 text-status-error hover:bg-status-error/10 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <!-- Consultation info -->
+        <div class="p-6 flex-1 overflow-y-auto">
+          <div class="bg-surface-card border border-border-default rounded-card p-4 mb-4">
+            <p class="font-body text-xs text-text-muted uppercase tracking-widest mb-2">Descripción</p>
+            <p class="font-body text-sm text-text-secondary">{{ selectedDetail.description ?? 'Sin descripción' }}</p>
+          </div>
+          <div class="bg-surface-card border border-border-default rounded-card p-4">
+            <p class="font-body text-xs text-text-muted uppercase tracking-widest mb-2">Abogado</p>
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-accent flex items-center justify-center font-heading font-bold text-xs text-white shrink-0">
+                {{ selectedDetail.lawyer.name?.[0]?.toUpperCase() }}
+              </div>
+              <div>
+                <p class="font-heading font-semibold text-sm text-text-primary">{{ selectedDetail.lawyer.name }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 
@@ -364,22 +333,10 @@ onMounted(async () => {
   <BaseModal :visible="deleteRequestModalVisible" @close="deleteRequestModalVisible = false">
     <AlertCard
       title="Cancelar consulta"
-      message="Esta seguro de que desea cancelar esta consulta?"
+      message="¿Estás seguro de que deseas cancelar esta consulta?"
       type="error"
       buttonText="Cancelar consulta"
       @close-alert="cancelActive"
     />
   </BaseModal>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
