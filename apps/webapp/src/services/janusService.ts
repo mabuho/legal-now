@@ -5,8 +5,7 @@ import { ChatMessageType, type ChatMessage } from '@/types/chat';
 const server = import.meta.env.VITE_JANUS_WSS
 //const janusSecre = import.meta.env.VITE_JANUS_API_SECRET
 const iceServers = null
-const debugLevel = 'all' // útil en pruebas
-const plugin = 'janus.plugin.textroom'
+const debugLevel = 'all' // útil en pruebas
 let janus: any = null
 const Janus = (window as any).Janus
 
@@ -141,7 +140,7 @@ export const iniciarTextRoom = async (
                     import('@/stores/chatSessionStore')
                         .then(({ useChatSessionStore }) => {
                             const chatStore = useChatSessionStore()
-                            chatStore.saveChatMessage(chatId, chatMessage, false)
+                            chatStore.appendIncomingMessage(chatId, chatMessage)
                         })
                 },
                 oncleanup: () => {

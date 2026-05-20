@@ -36,7 +36,7 @@ import {
     iniciarTextRoom,
     enviarMensajeTextRoomPorChat,
     cerrarSesionTextRoomChat
-} from '@/services/initTextRoomPerChat';
+} from '@/services/janusService';
 import ChatList from '@/components/chat/ChatList.vue'
 import ChatMessages from '@/components/chat/ChatMessages.vue'
 import ChatMessageHeader from '@/components/chat/ChatMessageHeader.vue'
