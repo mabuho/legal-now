@@ -34,7 +34,6 @@ import { useChatSessionStore } from '@/stores/chatSessionStore';
 import {
     initJanusLib,
     iniciarTextRoom,
-    crearSalaTextRoom,
     enviarMensajeTextRoomPorChat,
     cerrarSesionTextRoomChat
 } from '@/services/initTextRoomPerChat';
@@ -149,12 +148,14 @@ async function selectChat(chat: ChatSession) {
 
         chatStore.selectSession(chat)
         await chatStore.fetchMessages(chat.id)
-        // TODO: Phase 3 — resolve janus_room_id via consultation lookup
-        // if (janus_room_id && currentUser?.email) {
-        //     await initJanusLib()
-        //     await crearSalaTextRoom(janus_room_id)
-        //     await iniciarTextRoom(chat.id, janus_room_id, currentUser)
-        // }
+
+        // Phase 3: Join pre-created Janus TextRoom (backend allocates on IN_PROGRESS)
+        const consultation = selectedConsultation.value
+        const roomId = consultation?.janus_room_id
+        if (roomId && currentUser) {
+            await initJanusLib()
+            await iniciarTextRoom(chat.id, roomId, currentUser)
+        }
         lastJanusChatId.value = chat.id
     } catch (error) {
         console.error('[selectChat] Error:', error)
@@ -173,7 +174,12 @@ const handleSendMessage = async (message: string) => {
     chatStore.fetchMessages(selectedChat.value.id).catch(err =>
         console.warn('[ChatPanel] post-send fetchMessages failed:', err)
     )
-    // TODO: Phase 3 — broadcast via Janus DataChannel: enviarMensajeTextRoomPorChat(...)
+    // Phase 3: Broadcast via Janus DataChannel
+    if (lastJanusChatId.value) {
+        enviarMensajeTextRoomPorChat(lastJanusChatId.value, { text: message, sender: currentUser?.email }).catch(err =>
+            console.warn('[ChatPanel] Janus DataChannel send failed:', err)
+        )
+    }
 }
 
 const handleSendFiles = async (_filesData: { files: File[], caption: string }) => {
