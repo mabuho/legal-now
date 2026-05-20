@@ -47,12 +47,10 @@ import {
     ConsultationStatus,
 } from '@/types/chat'
 import ChatListHeader from '@/components/chat/ChatListHeader.vue';
-import { useJanus } from '@/composables/initJanusLib';
 
 const authStore = useAuthStore()
 const consultationStore = useMemoryStore()
 const chatStore = useChatSessionStore()
-const janusLib = useJanus()
 const route = useRoute()
 
 const {
