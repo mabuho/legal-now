@@ -10,7 +10,7 @@ services:
     #image: canyan/janus-gateway:0.10.7
     #image: custom-janus
     image: sucwangsr/janus-webrtc-gateway-docker:latest
-    container_name: janus_webrtc
+    container_name: janus-server
     #platform: linux/amd64
     restart: always
     ports:
@@ -24,20 +24,22 @@ services:
       - ./backend/janus/recordings:/recordings
       - ./backend/janus/recordings/streams:/recordings/streams
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8088/janus/info"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s # Whisper tarda más en cargar el modelo
+      start_period: 1m # Whisper tarda más en cargar el modelo
     networks:
       - legalnet
 
   whisper-server:
     #image: quay.io/juit/faster-whisper:latest
-    #container_name: whisper-transcriber
+    #container_name: whisper-server
     #image: local-faster-whisper
-    image: fedirz/faster-whisper-server:latest-cpu
-    container_name: whisper_transcriber
+    image: fedirz/faster-whisper-server:latest-cuda
+    container_name: whisper-server
+    ports:
+      - "8000:8000"
     restart: unless-stopped
     #command: >
     #  bash -c "while true; do \
@@ -46,12 +48,15 @@ services:
     volumes:
       - ./backend/janus/recordings:/recordings
       - ./backend/whisper/transcribe.py:/app/transcribe.py
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8088/janus/info"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
+    depends_on:
+      janus-server:
+        condition: service_healthy
+    #healthcheck:
+    #  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 3
+    #  start_period: 2m # Vital: dale tiempo a que cargue el modelo pesado
     networks:
       - legalnet
 
@@ -67,9 +72,14 @@ services:
       SPRING_DATASOURCE_USERNAME: legalnow
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-legalnow}
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-please-override-in-production-min-32-bytes-12345678}
+      JANUS_API_URL: http://janus-server:8088
+      JANUS_ADMIN_SECRET: ${JANUS_ADMIN_SECRET:-janusoverlord}
+    # TODO: Agregar health check para que webapp dependa en este servicio.
     depends_on:
       postgres:
         condition: service_healthy
+      #whisper-server:
+      #  condition: service_healthy
     working_dir: /rest-api
     networks:
       - legalnet
@@ -85,10 +95,7 @@ services:
       VITE_JANUS_API_SECRET: ${JANUS_API_SECRET:-janusrocks}
       VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8080/api/v1}
     depends_on:
-      janus-server:
-        condition: service_healthy
-      whisper-server:
-        condition: service_healthy
+      - rest-api
     networks:
       - legalnet
     volumes:
@@ -98,7 +105,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: legalnow_postgres
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_DB: legalnow
