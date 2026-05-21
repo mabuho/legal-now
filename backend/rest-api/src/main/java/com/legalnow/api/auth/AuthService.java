@@ -1,5 +1,7 @@
 package com.legalnow.api.auth;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,9 @@ import com.legalnow.api.auth.exception.InvalidCredentialsException;
 import com.legalnow.api.auth.refresh.RefreshTokenService;
 import com.legalnow.api.auth.refresh.RefreshTokenService.IssuedRefreshToken;
 import com.legalnow.api.auth.refresh.RefreshTokenService.RotationResult;
+import com.legalnow.api.lawyer.domain.LawyerProfile;
+import com.legalnow.api.lawyer.domain.LawyerProfileRepository;
+import com.legalnow.api.user.Role;
 import com.legalnow.api.user.User;
 import com.legalnow.api.user.UserRepository;
 
@@ -24,17 +29,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final LawyerProfileRepository lawyerProfileRepository;
 
     public AuthService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         JwtService jwtService,
-        RefreshTokenService refreshTokenService
+        RefreshTokenService refreshTokenService,
+        LawyerProfileRepository lawyerProfileRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.lawyerProfileRepository = lawyerProfileRepository;
     }
 
     @Transactional
@@ -48,6 +56,15 @@ public class AuthService {
         user.setName(req.name());
         user.setRole(req.role());
         User saved = userRepository.save(user);
+
+        if (saved.getRole() == Role.LAWYER) {
+            LawyerProfile lp = new LawyerProfile();
+            lp.setUser(saved);
+            lp.setBarId(req.barId());
+            lp.setLanguages(List.of());
+            lawyerProfileRepository.save(lp);
+        }
+
         return buildAuthResponse(saved);
     }
 

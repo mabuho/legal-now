@@ -35,3 +35,5 @@ app:
   janus:
     api-url: ${JANUS_API_URL:http://janus-server:8088/janus}
     admin-secret: ${JANUS_ADMIN_SECRET:janusoverlord}
+  uploads:
+    dir: ${UPLOADS_DIR:/uploads}

@@ -74,6 +74,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-please-override-in-production-min-32-bytes-12345678}
       JANUS_API_URL: http://janus-server:8088/janus
       JANUS_ADMIN_SECRET: ${JANUS_ADMIN_SECRET:-janusoverlord}
+      UPLOADS_DIR: /uploads
+    volumes:
+      - ./backend/uploads:/uploads
     # TODO: Agregar health check para que webapp dependa en este servicio.
     depends_on:
       postgres:
