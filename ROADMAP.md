@@ -34,7 +34,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 
 ### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
 
-**PR 1 — `feat/phase-5a-backend`** (🟡 In Progress — PR #13)
+**PR 1 — `feat/phase-5a-backend`** (✅ Done — PR #13)
 - ✅ `lawyer_profiles` JPA entity + CRUD API (`/api/v1/lawyers`)
 - ✅ `lawyer_documents` table (V4) + multipart upload (`/api/v1/lawyers/me/documents`)
 - ✅ `verification_attempts` table (V4) + verification flow (request / admin approve / reject)
@@ -42,7 +42,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ `CEDULAPROFESIONAL_*` env vars + `app.sep` config block
 - ✅ Auto-create `lawyer_profiles` row on lawyer registration (with optional `barId`)
 
-**PR 2 — `feat/phase-5b-email-onboarding-backend`** _(Todo)_
+**PR 2 — `feat/phase-5b-email-onboarding-backend`** (🟡 In Progress)
 - ⬜ V5 migration: `email_confirm_token/expires_at/confirmed_at` en `users`; `onboarding_completed_at` en `lawyer_profiles`; `validation_type` en `verification_attempts`
 - ⬜ `POST /auth/confirm-email` — valida token, setea `email_confirmed_at`
 - ⬜ `POST /auth/resend-confirmation` — regenera token + reenvía email (idempotente, no leakea)
@@ -64,7 +64,15 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Badge verificado en `LawyerCard.vue` + estado en Settings
 - ⬜ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
 
-### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution
+---
+
+## 🟡 In Progress
+
+---
+
+## ✅ Done
+
+### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution _(completed 2026-05-21)_
 
 - ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
 - ✅ Landing: refactor Home.vue (hero centrado, nav, secciones, footer) — PR #8
@@ -73,16 +81,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory) — PR #10
 - ✅ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav — PR #11
 - ✅ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register — PR #12
-
----
-
-## 🟡 In Progress
-
-_(nothing active)_
-
----
-
-## ✅ Done
 
 ### Phase 2 — Migrate Redis-API → Java _(completed 2026-05-19)_
 

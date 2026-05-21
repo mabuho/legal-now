@@ -44,7 +44,7 @@
 **/*.mp3
 **/*.wav
 **/recordings/
-**/uploads/
+**/uploads/*
 
 # ── Test coverage & reports ────────────────────────────────
 **/coverage/

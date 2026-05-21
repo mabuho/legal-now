@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,12 @@ import com.legalnow.api.lawyer.domain.LawyerDocumentRepository;
 import com.legalnow.api.lawyer.domain.LawyerProfileRepository;
 import com.legalnow.api.lawyer.dto.DocumentResponse;
 
+@Slf4j
 @Service
 public class LawyerDocumentService {
 
-    private static final Set<String> ALLOWED_DOC_TYPES = Set.of("cedula", "titulo", "otro");
+    private static final Set<String> ALLOWED_DOC_TYPES =
+            Set.of("cedula", "titulo", "ine", "cfdi");
 
     private final LawyerDocumentRepository documentRepository;
     private final LawyerProfileRepository lawyerProfileRepository;
@@ -46,7 +49,8 @@ public class LawyerDocumentService {
             throw new NotFoundException("Lawyer profile not found");
         }
         if (!ALLOWED_DOC_TYPES.contains(docType)) {
-            throw new BadRequestException("Invalid doc_type. Allowed: cedula, titulo, otro");
+            log.error("Invalid doc_type. Allowed: cedula, titulo, ine, cfdi");
+            throw new BadRequestException(String.format("Invalid doc type: %s", docType));
         }
         if (file.isEmpty()) {
             throw new BadRequestException("File must not be empty");
