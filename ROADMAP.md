@@ -32,14 +32,50 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Mercado Pago integration (phase 6b)
 - ⬜ Refund flow
 
+---
+
+## 🟡 In Progress
+
 ### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
 
-- ⬜ Document upload endpoints + storage (S3 or similar)
-- ⬜ New tables: `lawyer_documents`, `verification_attempts` (Flyway V4+)
-- ⬜ Gov API integration: SAT (cédula profesional), SEP/RNP (título)
-- ⬜ Verification state machine → set `lawyer_profiles.verified_at`
+**PR 1 — `feat/phase-5a-backend`** (✅ Done — PR #13)
 
-### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution
+- ✅ `lawyer_profiles` JPA entity + CRUD API (`/api/v1/lawyers`)
+- ✅ `lawyer_documents` table (V4) + multipart upload (`/api/v1/lawyers/me/documents`)
+- ✅ `verification_attempts` table (V4) + verification flow (request / admin approve / reject)
+- ✅ SEP cédula profesional client (`SepCedulaClient`) + `SepValidationService`
+- ✅ `CEDULAPROFESIONAL_*` env vars + `app.sep` config block
+- ✅ Auto-create `lawyer_profiles` row on lawyer registration (with optional `barId`)
+
+**PR 2 — `feat/phase-5b-email-onboarding-backend`** (🟡 In Progress)
+
+- ⬜ V5 migration: `email_confirm_token/expires_at/confirmed_at` en `users`; `onboarding_completed_at` en `lawyer_profiles`; `validation_type` en `verification_attempts`
+- ⬜ `POST /auth/confirm-email` — valida token, setea `email_confirmed_at`
+- ⬜ `POST /auth/resend-confirmation` — regenera token + reenvía email (idempotente, no leakea)
+- ⬜ Registro modifica: genera token, envía email confirmación (todos los roles)
+- ⬜ `POST /api/v1/lawyers/me/onboarding/complete` — finaliza onboarding, dispara SEP check automático
+  - SEP ok → `verified_at = now()`, `VerificationAttempt(type='system-api', status='approved')`
+  - SEP fail → `VerificationAttempt(type='system-api', status='rejected')`, admin fallback habilitado
+- ⬜ Guard en rutas autenticadas: `email_confirmed_at IS NOT NULL`
+- ⬜ Email service interface (impl real diferida — Spring Mail / SES)
+
+**PR 3 — `feat/phase-5c-frontend`** _(Todo, requiere PR 2)_
+
+- ⬜ `ConfirmEmailPendingView.vue` — pantalla post-registro (todos los roles)
+- ⬜ `ConfirmEmailView.vue` — landing desde link email (`?token=`)
+- ⬜ `ResendConfirmationView.vue` — solicitar nuevo link
+- ⬜ `OnboardingView.vue` — wizard 4 pasos (lawyer): perfil → cédula + doc → especialidades → finalizar
+  - Onboarding pausable/reanudable desde Settings; cada paso persiste via `PATCH /lawyers/me`
+  - Paso final → SEP check; resultado muestra badge o "pendiente revisión manual"
+- ⬜ Router guards: `emailConfirmedAt` check (todos) + `onboardingCompletedAt` check (lawyers)
+- ⬜ Badge verificado en `LawyerCard.vue` + estado en Settings
+- ⬜ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
+
+---
+
+## ✅ Done
+
+### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution _(completed 2026-05-21)_
 
 - ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
 - ✅ Landing: refactor Home.vue (hero centrado, nav, secciones, footer) — PR #8
@@ -48,16 +84,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory) — PR #10
 - ✅ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav — PR #11
 - ✅ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register — PR #12
-
----
-
-## 🟡 In Progress
-
-_(nothing active)_
-
----
-
-## ✅ Done
 
 ### Phase 2 — Migrate Redis-API → Java _(completed 2026-05-19)_
 

@@ -25,6 +25,7 @@ Thumbs.db
 backend/postgres_data/
 backend/redis_data/
 backend/janus/recordings/
+backend/uploads/**
 
 # Java / Maven
 backend/rest-api/target/

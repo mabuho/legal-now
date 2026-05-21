@@ -11,5 +11,6 @@ public record RegisterRequest(
     @Email @NotBlank String email,
     @NotBlank @Size(min = 8) String password,
     @NotBlank String name,
-    @NotNull Role role
+    @NotNull Role role,
+    @Size(max = 64) String barId
 ) {}

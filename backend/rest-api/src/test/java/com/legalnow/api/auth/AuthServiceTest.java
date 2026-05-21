@@ -27,6 +27,7 @@ import com.legalnow.api.auth.exception.InvalidCredentialsException;
 import com.legalnow.api.auth.exception.InvalidTokenException;
 import com.legalnow.api.auth.refresh.RefreshToken;
 import com.legalnow.api.auth.refresh.RefreshTokenRepository;
+import com.legalnow.api.lawyer.domain.LawyerProfileRepository;
 import com.legalnow.api.user.Role;
 import com.legalnow.api.user.UserRepository;
 
@@ -55,17 +56,21 @@ class AuthServiceTest {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
+    @Autowired
+    private LawyerProfileRepository lawyerProfileRepository;
+
     @BeforeEach
     void cleanDb() {
         assumeTrue(isDockerAvailable(), "Docker is not available; skipping.");
         refreshTokenRepository.deleteAll();
+        lawyerProfileRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
     void register_returnsTokensAndPersistsUser() {
         AuthResponse res = authService.register(new RegisterRequest(
-            "alice@example.com", "password123", "Alice", Role.CLIENT
+            "alice@example.com", "password123", "Alice", Role.CLIENT, "12345678"
         ));
 
         assertNotNull(res);
@@ -80,11 +85,11 @@ class AuthServiceTest {
     @Test
     void register_duplicateEmail_throws() {
         authService.register(new RegisterRequest(
-            "dup@example.com", "password123", "Dup", Role.CLIENT
+            "dup@example.com", "password123", "Dup", Role.CLIENT, "12345678"
         ));
         assertThrows(EmailAlreadyExistsException.class, () ->
             authService.register(new RegisterRequest(
-                "dup@example.com", "password123", "Dup2", Role.LAWYER
+                "dup@example.com", "password123", "Dup2", Role.LAWYER, "12345678"
             ))
         );
     }
@@ -92,7 +97,7 @@ class AuthServiceTest {
     @Test
     void login_wrongPassword_throws() {
         authService.register(new RegisterRequest(
-            "bob@example.com", "correct-password", "Bob", Role.LAWYER
+            "bob@example.com", "correct-password", "Bob", Role.LAWYER, "12345678"
         ));
         assertThrows(InvalidCredentialsException.class, () ->
             authService.login(new LoginRequest("bob@example.com", "wrong-password"))
@@ -102,7 +107,7 @@ class AuthServiceTest {
     @Test
     void refresh_rotation_revokesOldTokenAndIssuesNew() {
         AuthResponse initial = authService.register(new RegisterRequest(
-            "carol@example.com", "password123", "Carol", Role.CLIENT
+            "carol@example.com", "password123", "Carol", Role.CLIENT, "12345678"
         ));
         String originalRefresh = initial.tokens().refreshToken();
 
@@ -118,6 +123,35 @@ class AuthServiceTest {
 
         // Reusing the original refresh token must fail.
         assertThrows(InvalidTokenException.class, () -> authService.refresh(originalRefresh));
+    }
+
+    @Test
+    void register_lawyer_withBarId_createsLawyerProfile() {
+        authService.register(new RegisterRequest(
+            "lawyer1@example.com", "password123", "Lawyer One", Role.LAWYER, "12345678"
+        ));
+
+        assertTrue(lawyerProfileRepository.existsById(
+            userRepository.findByEmail("lawyer1@example.com").orElseThrow().getId()
+        ));
+        assertEquals("12345678",
+            lawyerProfileRepository.findById(
+                userRepository.findByEmail("lawyer1@example.com").orElseThrow().getId()
+            ).orElseThrow().getBarId()
+        );
+    }
+
+    @Test
+    void register_lawyer_withoutBarId_createsLawyerProfileWithNullBarId() {
+        authService.register(new RegisterRequest(
+            "lawyer2@example.com", "password123", "Lawyer Two", Role.LAWYER, null
+        ));
+
+        var profile = lawyerProfileRepository.findById(
+            userRepository.findByEmail("lawyer2@example.com").orElseThrow().getId()
+        ).orElseThrow();
+        assertNotNull(profile);
+        org.junit.jupiter.api.Assertions.assertNull(profile.getBarId());
     }
 
     private static boolean isDockerAvailable() {

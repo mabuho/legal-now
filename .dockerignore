@@ -1,0 +1,38 @@
+# Version control
+.git/
+.gitignore
+
+# CI/CD & local config
+.github/
+.claude/
+.superpowers/
+.remember/
+
+# Editor / OS artifacts
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Runtime data volumes (mounted at runtime, not baked into image)
+backend/postgres_data/
+backend/redis_data/
+backend/janus/recordings/
+backend/uploads/*
+docs/
+
+# Java build artifacts
+backend/rest-api/target/
+
+# Frontend build artifacts
+apps/webapp/node_modules/
+apps/webapp/dist/
+apps/webapp/coverage/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log

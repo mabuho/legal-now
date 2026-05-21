@@ -74,6 +74,16 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-please-override-in-production-min-32-bytes-12345678}
       JANUS_API_URL: http://janus-server:8088/janus
       JANUS_ADMIN_SECRET: ${JANUS_ADMIN_SECRET:-janusoverlord}
+      APP_SEP_API_BASE: https://cedulaprofesional.sep.gob.mx/api
+      APP_SEP_API_AUTH: /auth/token
+      APP_SEP_API_PATH: /solr/profesionista/consultar/byDetalle
+      APP_SEP_API_KEY: 65da8s675f8s75fda675s8d76as87d5as675da
+      APP_SEP_CLIENT_ID: rnp-angular-app-prod
+      APP_SEP_HOST: cedulaprofesional.sep.gob.mx
+      APP_SEP_REFER: https://cedulaprofesional.sep.gob.mx/
+      UPLOADS_DIR: /uploads
+    volumes:
+      - ./backend/uploads:/uploads
     # TODO: Agregar health check para que webapp dependa en este servicio.
     depends_on:
       postgres:
