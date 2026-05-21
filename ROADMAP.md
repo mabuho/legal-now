@@ -32,9 +32,14 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Mercado Pago integration (phase 6b)
 - ⬜ Refund flow
 
+---
+
+## 🟡 In Progress
+
 ### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
 
 **PR 1 — `feat/phase-5a-backend`** (✅ Done — PR #13)
+
 - ✅ `lawyer_profiles` JPA entity + CRUD API (`/api/v1/lawyers`)
 - ✅ `lawyer_documents` table (V4) + multipart upload (`/api/v1/lawyers/me/documents`)
 - ✅ `verification_attempts` table (V4) + verification flow (request / admin approve / reject)
@@ -43,6 +48,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Auto-create `lawyer_profiles` row on lawyer registration (with optional `barId`)
 
 **PR 2 — `feat/phase-5b-email-onboarding-backend`** (🟡 In Progress)
+
 - ⬜ V5 migration: `email_confirm_token/expires_at/confirmed_at` en `users`; `onboarding_completed_at` en `lawyer_profiles`; `validation_type` en `verification_attempts`
 - ⬜ `POST /auth/confirm-email` — valida token, setea `email_confirmed_at`
 - ⬜ `POST /auth/resend-confirmation` — regenera token + reenvía email (idempotente, no leakea)
@@ -54,6 +60,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Email service interface (impl real diferida — Spring Mail / SES)
 
 **PR 3 — `feat/phase-5c-frontend`** _(Todo, requiere PR 2)_
+
 - ⬜ `ConfirmEmailPendingView.vue` — pantalla post-registro (todos los roles)
 - ⬜ `ConfirmEmailView.vue` — landing desde link email (`?token=`)
 - ⬜ `ResendConfirmationView.vue` — solicitar nuevo link
@@ -63,10 +70,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ⬜ Router guards: `emailConfirmedAt` check (todos) + `onboardingCompletedAt` check (lawyers)
 - ⬜ Badge verificado en `LawyerCard.vue` + estado en Settings
 - ⬜ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
-
----
-
-## 🟡 In Progress
 
 ---
 

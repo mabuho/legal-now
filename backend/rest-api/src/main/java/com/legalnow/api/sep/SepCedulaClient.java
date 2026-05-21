@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -19,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class SepCedulaClient {
 
-    private static final String CONSULTAR_PATH = "/solr/profesionista/consultar/byDetalle";
     private static final TypeReference<List<SepProfesionistaDto>> LIST_TYPE = new TypeReference<>() {};
 
     private final RestClient restClient;
@@ -37,9 +38,9 @@ public class SepCedulaClient {
     private String fetchToken() {
         try {
             String raw = restClient.get()
-                .uri("/auth/token")
-                .header("Host", "cedulaprofesional.sep.gob.mx")
-                .header("Referer", "https://cedulaprofesional.sep.gob.mx/")
+                .uri(properties.apiAuth())
+                .header(HttpHeaders.HOST, properties.host())
+                .header(HttpHeaders.REFERER, properties.refer())
                 .header("X-API-Key", properties.apiKey())
                 .header("X-Client-Id", properties.clientId())
                 .retrieve()
@@ -98,9 +99,9 @@ public class SepCedulaClient {
         try {
             String bodyJson = objectMapper.writeValueAsString(body);
             String response = restClient.post()
-                .uri(CONSULTAR_PATH)
-                .header("Authorization", "Bearer " + token)
-                .header("Content-Type", "application/json")
+                .uri(properties.apiPath())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(bodyJson)
                 .retrieve()
                 .body(String.class);
