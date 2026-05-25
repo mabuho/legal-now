@@ -19,7 +19,7 @@ const userProfile = ref<UserProfile>({
   phone: '+52 55 1234 5678',
   address: 'Calle Principal 123, Ciudad de México',
   identification: 'PEXJ890101ABC',
-  avatar: auth.user?.avatar
+  avatar: auth.user?.avatar_url
 })
 
 const isEditing = ref(false)

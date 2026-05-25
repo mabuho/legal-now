@@ -104,7 +104,7 @@ public class AuthService {
             result.issued().rawToken(),
             jwtService.getAccessTtlSeconds()
         );
-        return new AuthResponse(UserResponse.from(result.user()), tokens);
+        return new AuthResponse(buildUserResponse(result.user()), tokens);
     }
 
     @Transactional
@@ -140,6 +140,15 @@ public class AuthService {
         emailService.sendConfirmationEmail(user.getEmail(), token);
     }
 
+    public UserResponse buildUserResponse(User user) {
+        if (user.getRole() == Role.LAWYER) {
+            return lawyerProfileRepository.findById(user.getId())
+                .map(lp -> UserResponse.from(user, lp))
+                .orElse(UserResponse.from(user));
+        }
+        return UserResponse.from(user);
+    }
+
     private AuthResponse buildAuthResponse(User user) {
         String accessToken = jwtService.generateAccessToken(user);
         IssuedRefreshToken issued = refreshTokenService.issue(user);
@@ -148,6 +157,6 @@ public class AuthService {
             issued.rawToken(),
             jwtService.getAccessTtlSeconds()
         );
-        return new AuthResponse(UserResponse.from(user), tokens);
+        return new AuthResponse(buildUserResponse(user), tokens);
     }
 }

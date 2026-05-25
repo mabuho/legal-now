@@ -81,6 +81,6 @@ public class AuthController {
         }
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new InvalidTokenException("User no longer exists"));
-        return ResponseEntity.ok(UserResponse.from(user));
+        return ResponseEntity.ok(authService.buildUserResponse(user));
     }
 }

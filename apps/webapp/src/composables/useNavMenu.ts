@@ -41,8 +41,8 @@ export function useNavMenu() {
       return [
         { label: 'Mis consultas', to: '/dashboard/lawyer', visible: true },
         { label: 'Historial', to: '/dashboard/history', visible: true },
-        { label: 'Completar onboarding', to: '/onboarding', visible: !user.onboardingCompletedAt },
-        { label: 'Verificación pendiente', visible: !!user.onboardingCompletedAt && !user.verifiedAt },
+        { label: 'Completar onboarding', to: '/onboarding', visible: !user.onboarding_completed_at },
+        { label: 'Verificación pendiente', visible: !!user.onboarding_completed_at && !user.verified_at },
       ]
     }
 
