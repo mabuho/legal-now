@@ -36,6 +36,10 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 
 ## 🟡 In Progress
 
+---
+
+## ✅ Done
+
 ### Phase 5 — Lawyer onboarding & verification _(unblocks Phase 6 + Phase 7)_
 
 **PR 1 — `feat/phase-5a-backend`** (✅ Done — PR #13)
@@ -71,10 +75,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
 - ✅ `RegisterView.vue` → redirect a `confirm-email-pending` post-registro
 
----
-
-## ✅ Done
-
 ### Phase 4 — Frontend: Vuetify → Tailwind + redesign Evolution _(completed 2026-05-21)_
 
 - ✅ Install Tailwind v3 + design tokens (`tailwind.config.ts`, PR #6)
@@ -84,6 +84,15 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Dashboard views: master-detail (DashboardUsers + ChatPanel + DashboardHistory) — PR #10
 - ✅ Components Tier 2: ConsultaCard, chat components, LawyerCard, BottomNav — PR #11
 - ✅ Cleanup: remove Vuetify + radix-vue + deduplicar vistas register — PR #12
+
+### Phase 3 — Janus room admin → Java _(merged PR #3, 2026-05-19)_
+
+- ✅ Build Janus Admin API client in `com.legalnow.api.janus` (`JanusProperties`, `JanusClient`, `JanusService`)
+- ✅ Wire `JanusService` into `ConsultationService` — room created on consultation
+- ✅ Persist `janus_room_id` in `consultations` table on creation
+- ✅ Frontend reads `roomId` from API, keeps `Janus.js` client
+- ✅ Remove dead room-creation code from frontend; rename `initTextRoomPerChat.ts` → `janusService.ts`
+- ✅ Issue short-lived Janus room pins from Java — generated on `IN_PROGRESS` transition, stored in `consultations.janus_pin`, exposed in `ConsultationResponse`, frontend passes in join payload
 
 ### Phase 2 — Migrate Redis-API → Java _(completed 2026-05-19)_
 
@@ -111,15 +120,6 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ Redis removed entirely — no `@Cacheable`, no Spring Redis dep, no redis service in compose
 - ✅ `initJanusLib.ts` + `initTextRoomPerChat.ts` (→ `janusService.ts`) `saveChatMessage` fixed — Phase 3 PR #3
 
-### Phase 3 — Janus room admin → Java _(merged PR #3, 2026-05-19)_
-
-- ✅ Build Janus Admin API client in `com.legalnow.api.janus` (`JanusProperties`, `JanusClient`, `JanusService`)
-- ✅ Wire `JanusService` into `ConsultationService` — room created on consultation
-- ✅ Persist `janus_room_id` in `consultations` table on creation
-- ✅ Frontend reads `roomId` from API, keeps `Janus.js` client
-- ✅ Remove dead room-creation code from frontend; rename `initTextRoomPerChat.ts` → `janusService.ts`
-- ✅ Issue short-lived Janus room pins from Java — generated on `IN_PROGRESS` transition, stored in `consultations.janus_pin`, exposed in `ConsultationResponse`, frontend passes in join payload
-
 ### Phase 1 — Java REST API base
 
 - ✅ Spring Boot 3.3.5 Maven scaffold at `backend/api/`
@@ -141,6 +141,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - 🔵 Lawyer payouts via Stripe Connect splits (phase 5+)
 - 🔵 Mercado Pago integration (Stripe first)
 - 🔵 Recording transcription pipeline polish (Whisper already runs, but not wired into `chat_sessions.transcript_path`)
+- 🔵 Real email delivery — `ConsoleEmailService` solo loggea; reemplazar con `SpringMailEmailService` (Spring Mail + SMTP) o `SesEmailService` (AWS SES). Requiere vars `MAIL_HOST/PORT/USER/PASS` o `AWS_SES_*`. Interface `EmailService` ya existe en `com.legalnow.api.email`.
 
 ---
 
