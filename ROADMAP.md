@@ -58,17 +58,18 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
   - SEP fail → `VerificationAttempt(type='system-api', status='rejected')`, admin fallback habilitado
 - ✅ Email service interface + `ConsoleEmailService` stub (impl real diferida — Spring Mail / SES)
 
-**PR 3 — `feat/phase-5c-frontend`** _(Todo, requiere PR 2)_
+**PR 3 — `feat/phase-5c-frontend`** (🟡 In Progress — PR pending)
 
-- ⬜ `ConfirmEmailPendingView.vue` — pantalla post-registro (todos los roles)
-- ⬜ `ConfirmEmailView.vue` — landing desde link email (`?token=`)
-- ⬜ `ResendConfirmationView.vue` — solicitar nuevo link
-- ⬜ `OnboardingView.vue` — wizard 4 pasos (lawyer): perfil → cédula + doc → especialidades → finalizar
-  - Onboarding pausable/reanudable desde Settings; cada paso persiste via `PATCH /lawyers/me`
-  - Paso final → SEP check; resultado muestra badge o "pendiente revisión manual"
-- ⬜ Router guards: `emailConfirmedAt` check (todos) + `onboardingCompletedAt` check (lawyers)
-- ⬜ Badge verificado en `LawyerCard.vue` + estado en Settings
-- ⬜ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
+- ✅ `ConfirmEmailPendingView.vue` — pantalla post-registro (todos los roles)
+- ✅ `ConfirmEmailView.vue` — landing desde link email (`?token=`)
+- ✅ `ResendConfirmationView.vue` — solicitar nuevo link
+- ✅ `OnboardingView.vue` — wizard 4 pasos (lawyer): perfil → cédula + doc → especialidades → finalizar
+  - Cada paso persiste via `PATCH /api/v1/lawyers/me`
+  - Paso final → `POST /api/v1/lawyers/me/onboarding/complete` → SEP check automático
+- ✅ Router guards: `emailConfirmedAt` check (todos) + `onboardingCompletedAt` check (lawyers)
+- ✅ `VerificationBadge.vue` — badge verde/gris según `verified_at`
+- ✅ `Marketplace.vue` → consume `GET /api/v1/lawyers` (replace mock data)
+- ✅ `RegisterView.vue` → redirect a `confirm-email-pending` post-registro
 
 ---
 
