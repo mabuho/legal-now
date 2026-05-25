@@ -31,7 +31,7 @@
           {{ sending ? 'Enviando...' : sent ? 'Correo enviado' : 'Reenviar correo' }}
         </button>
 
-        <button type="button" @click="router.push('/')"
+        <button type="button" @click="goHome"
           class="font-body text-sm text-text-muted hover:text-text-secondary transition-colors">
           Volver al inicio
         </button>
@@ -53,6 +53,11 @@ const userEmail = auth.user?.email ?? ''
 const sending = ref(false)
 const sent = ref(false)
 const resendError = ref<string | null>(null)
+
+async function goHome() {
+  await auth.logout()
+  router.push('/')
+}
 
 async function resend() {
   sending.value = true
