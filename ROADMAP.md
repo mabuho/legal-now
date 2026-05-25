@@ -47,17 +47,16 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
 - ✅ `CEDULAPROFESIONAL_*` env vars + `app.sep` config block
 - ✅ Auto-create `lawyer_profiles` row on lawyer registration (with optional `barId`)
 
-**PR 2 — `feat/phase-5b-email-onboarding-backend`** (🟡 In Progress)
+**PR 2 — `feat/phase-5b-email-onboarding-backend`** (✅ Done — PR #14)
 
-- ⬜ V5 migration: `email_confirm_token/expires_at/confirmed_at` en `users`; `onboarding_completed_at` en `lawyer_profiles`; `validation_type` en `verification_attempts`
-- ⬜ `POST /auth/confirm-email` — valida token, setea `email_confirmed_at`
-- ⬜ `POST /auth/resend-confirmation` — regenera token + reenvía email (idempotente, no leakea)
-- ⬜ Registro modifica: genera token, envía email confirmación (todos los roles)
-- ⬜ `POST /api/v1/lawyers/me/onboarding/complete` — finaliza onboarding, dispara SEP check automático
+- ✅ V5 migration: `email_confirm_token/expires_at/confirmed_at` en `users`; `onboarding_completed_at` en `lawyer_profiles`; `validation_type` en `verification_attempts`
+- ✅ `POST /auth/confirm-email` — valida token, setea `email_confirmed_at`
+- ✅ `POST /auth/resend-confirmation` — regenera token + reenvía email (idempotente, no leakea)
+- ✅ Registro modifica: genera token, envía email confirmación (todos los roles)
+- ✅ `POST /api/v1/lawyers/me/onboarding/complete` — finaliza onboarding, dispara SEP check automático
   - SEP ok → `verified_at = now()`, `VerificationAttempt(type='system-api', status='approved')`
   - SEP fail → `VerificationAttempt(type='system-api', status='rejected')`, admin fallback habilitado
-- ⬜ Guard en rutas autenticadas: `email_confirmed_at IS NOT NULL`
-- ⬜ Email service interface (impl real diferida — Spring Mail / SES)
+- ✅ Email service interface + `ConsoleEmailService` stub (impl real diferida — Spring Mail / SES)
 
 **PR 3 — `feat/phase-5c-frontend`** _(Todo, requiere PR 2)_
 
