@@ -54,6 +54,23 @@ const router = createRouter({
       component: () => import('../views/auth/RegisterView.vue'),
       meta: { public: true }
     },
+    {
+      path: '/confirm-email-pending',
+      name: 'confirm-email-pending',
+      component: () => import('@/views/auth/ConfirmEmailPendingView.vue'),
+    },
+    {
+      path: '/confirm-email',
+      name: 'confirm-email',
+      component: () => import('@/views/auth/ConfirmEmailView.vue'),
+      meta: { public: true }
+    },
+    {
+      path: '/resend-confirmation',
+      name: 'resend-confirmation',
+      component: () => import('@/views/auth/ResendConfirmationView.vue'),
+      meta: { public: true }
+    },
     // Dashboard routes
     {
       path: '/dashboard',
@@ -104,6 +121,12 @@ const router = createRouter({
           component: () => import('@/views/ConsultPayment.vue')
         },
         {
+          path: '/onboarding',
+          name: 'onboarding',
+          component: () => import('@/views/dashboard/OnboardingView.vue'),
+          meta: { roles: ['lawyer'] }
+        },
+        {
           path: 'profile',
           name: 'profile',
           component: () => import('@/views/dashboard/Profile.vue'),
@@ -144,12 +167,29 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
+  // Email confirmation guard — skip for public routes and email-related routes
+  const emailSkip = ['confirm-email-pending', 'confirm-email', 'resend-confirmation', 'login', 'register']
+  if (auth.user && !auth.user.emailConfirmedAt && !to.meta.public && !emailSkip.includes(to.name as string)) {
+    return { name: 'confirm-email-pending' }
+  }
+
+  // Lawyer onboarding guard
+  if (
+    auth.user?.role === 'lawyer' &&
+    auth.user.emailConfirmedAt &&
+    !auth.user.onboardingCompletedAt &&
+    to.name !== 'onboarding' &&
+    !to.meta.public
+  ) {
+    return { name: 'onboarding' }
+  }
+
   if (auth.user && isLogin) {
-    return auth.user?.role === 'lawyer' ? "/dashboard/lawyer" : "/dashboard/client"
+    return auth.user?.role === 'lawyer' ? '/dashboard/lawyer' : '/dashboard/client'
   }
 
   if (allowedRoles && !allowedRoles.includes(auth.user?.role!)) {
-    return auth.user?.role === 'lawyer' ? "/dashboard/lawyer" : "/dashboard/client"
+    return auth.user?.role === 'lawyer' ? '/dashboard/lawyer' : '/dashboard/client'
   }
 
   return true

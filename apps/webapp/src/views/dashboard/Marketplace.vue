@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -16,6 +16,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import CustomSelect from '@/components/common/CustomSelect.vue'
 import LawyerCard from '@/components/marketplace/LawyerCard.vue'
+import { apiGet } from '@/services/apiClient'
 
 interface Lawyer {
   id: string
@@ -29,6 +30,34 @@ interface Lawyer {
   description: string
   workerType: 'independiente' | 'firma'
   //status: 'available' | 'busy' | 'offline'
+}
+
+interface ApiLawyer {
+  user_id: string
+  name: string
+  avatar_url: string | null
+  bar_id: string | null
+  bio: string | null
+  languages: string[]
+  specializations: Array<{ code: string; name: string }>
+  verified_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+function mapLawyer(a: ApiLawyer): Lawyer {
+  return {
+    id: a.user_id,
+    name: a.name ?? 'Sin nombre',
+    avatar: a.avatar_url ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${a.user_id}`,
+    specialization: a.specializations[0]?.name ?? 'Sin especialización',
+    location: '',
+    rating: 0,
+    reviewCount: 0,
+    baseRate: 0,
+    description: a.bio ?? '',
+    workerType: 'independiente',
+  }
 }
 
 const searchQuery = ref('')
@@ -70,81 +99,9 @@ const locations = [
   'Querétaro'
 ]
 
-// Mock data
-const lawyers = ref<Lawyer[]>([
-  {
-    id: '1',
-    name: 'Lic. Carlos Rodríguez',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
-    specialization: 'Derecho Laboral',
-    location: 'Ciudad de México',
-    rating: 4.8,
-    reviewCount: 127,
-    baseRate: 250,
-    description: 'Especialista en derecho laboral con más de 15 años de experiencia.',
-    workerType: 'independiente'
-  },
-  {
-    id: '2',
-    name: 'Lic. Ana López',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ana',
-    specialization: 'Derecho Familiar',
-    location: 'Guadalajara',
-    rating: 4.9,
-    reviewCount: 89,
-    baseRate: 300,
-    description: 'Experta en derecho familiar y mediación de conflictos.',
-    workerType: 'independiente'
-  },
-  {
-    id: '3',
-    name: 'Lic. Roberto Méndez',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto',
-    specialization: 'Derecho Civil',
-    location: 'Monterrey',
-    rating: 4.7,
-    reviewCount: 156,
-    baseRate: 200,
-    description: 'Amplia experiencia en casos civiles y contratos.',
-    workerType: 'independiente'
-  },
-  {
-    id: '4',
-    name: 'Lic. Luis Sánchez',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ryker',
-    specialization: 'Derecho Laboral',
-    location: 'Ciudad de México',
-    rating: 4.8,
-    reviewCount: 127,
-    baseRate: 250,
-    description: 'Especialista en derecho laboral con más de 15 años de experiencia.',
-    workerType: 'firma'
-  },
-  {
-    id: '5',
-    name: 'Lic. Ana López',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mackenzie',
-    specialization: 'Derecho Familiar',
-    location: 'Querétaro',
-    rating: 4.9,
-    reviewCount: 89,
-    baseRate: 300,
-    description: 'Experta en derecho familiar.',
-    workerType: 'independiente'
-  },
-  {
-    id: '6',
-    name: 'Lic. Roberto Méndez',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nolan',
-    specialization: 'Derecho Mercantil',
-    location: 'Monterrey',
-    rating: 4.7,
-    reviewCount: 156,
-    baseRate: 200,
-    description: 'Amplia experiencia en casos civiles y contratos.',
-    workerType: 'independiente'
-  }  
-])
+const lawyers = ref<Lawyer[]>([])
+const loading = ref(false)
+const fetchError = ref<string | null>(null)
 
 const filteredLawyers = computed(() => {
   return lawyers.value.filter(lawyer => {
@@ -176,13 +133,15 @@ const getworkerTypeColor = (workerType: string) => {
   }
 }
 
-// Lifecycle hooks
-onMounted(() => {
-  // No need to add event listeners for the old dropdown state and methods
-})
-
-onUnmounted(() => {
-  // No need to remove event listeners for the old dropdown state and methods
+onMounted(async () => {
+  loading.value = true
+  const { data, error } = await apiGet<ApiLawyer[]>('/api/v1/lawyers')
+  if (error) {
+    fetchError.value = error.message
+  } else {
+    lawyers.value = (data ?? []).map(mapLawyer)
+  }
+  loading.value = false
 })
 </script>
 
@@ -243,8 +202,12 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- Loading / Error states -->
+    <div v-if="loading" class="text-center py-12 text-text-muted font-body">Cargando abogados...</div>
+    <div v-else-if="fetchError" class="text-center py-12 text-status-error font-body text-sm">{{ fetchError }}</div>
+
     <!-- Results -->
-    <div v-if="filteredLawyers.length > 0" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else-if="filteredLawyers.length > 0" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div
         v-for="lawyer in filteredLawyers"
         :key="lawyer.id"
@@ -255,8 +218,8 @@ onUnmounted(() => {
     </div>
 
     <!-- No Results -->
-    <div 
-      v-else 
+    <div
+      v-else-if="!loading && !fetchError"
       class="text-center bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8"
     >
       <div class="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500 mb-4">
