@@ -26,20 +26,13 @@
           {{ resendError }}
         </p>
 
-        <button
-          type="button"
-          :disabled="sending || sent"
-          @click="resend"
-          class="w-full py-3 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white font-body font-semibold shadow-glow-btn hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mb-4"
-        >
+        <button type="button" :disabled="sending || sent" @click="resend"
+          class="w-full py-3 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white font-body font-semibold shadow-glow-btn hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed mb-4">
           {{ sending ? 'Enviando...' : sent ? 'Correo enviado' : 'Reenviar correo' }}
         </button>
 
-        <button
-          type="button"
-          @click="router.push('/')"
-          class="font-body text-sm text-text-muted hover:text-text-secondary transition-colors"
-        >
+        <button type="button" @click="router.push('/')"
+          class="font-body text-sm text-text-muted hover:text-text-secondary transition-colors">
           Volver al inicio
         </button>
       </div>
@@ -64,7 +57,7 @@ const resendError = ref<string | null>(null)
 async function resend() {
   sending.value = true
   resendError.value = null
-  const { error } = await apiPost('/auth/resend-confirmation', {})
+  const { error } = await apiPost('/auth/resend-confirmation', { email: userEmail }, { auth: false })
   if (error) {
     resendError.value = error.message
   } else {
