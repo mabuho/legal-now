@@ -154,7 +154,7 @@ const handleRegister = async () => {
       role: userType.value as Role,
     })
     if (auth.user) {
-      router.push(auth.user.role === 'lawyer' ? '/dashboard/lawyer' : '/dashboard/client')
+      router.push('/confirm-email-pending')
     }
   } catch (err: unknown) {
     registerError.value = auth.error ?? (err instanceof Error ? err.message : 'Error al registrarse.')
