@@ -169,15 +169,15 @@ router.beforeEach(async (to) => {
 
   // Email confirmation guard — skip for public routes and email-related routes
   const emailSkip = ['confirm-email-pending', 'confirm-email', 'resend-confirmation', 'login', 'register']
-  if (auth.user && !auth.user.emailConfirmedAt && !to.meta.public && !emailSkip.includes(to.name as string)) {
+  if (auth.user && !auth.user.email_confirmed_at && !to.meta.public && !emailSkip.includes(to.name as string)) {
     return { name: 'confirm-email-pending' }
   }
 
   // Lawyer onboarding guard
   if (
     auth.user?.role === 'lawyer' &&
-    auth.user.emailConfirmedAt &&
-    !auth.user.onboardingCompletedAt &&
+    auth.user.email_confirmed_at &&
+    !auth.user.onboarding_completed_at &&
     to.name !== 'onboarding' &&
     !to.meta.public
   ) {

@@ -16,16 +16,14 @@ export interface AuthUser {
   name: string
   role: Role | 'admin'
   avatar_url: string | null
-  /** Mapped from avatar_url for backward compat with pre-2b views. */
-  avatar?: string | null
   /** Lawyer room assignment — still used by Janus views (pre-2b). */
   roomId?: number
-  /** Set after email confirmation. */
-  emailConfirmedAt?: string | null
-  /** Set after lawyer completes onboarding wizard. */
-  onboardingCompletedAt?: string | null
-  /** Set after SEP verification passes. */
-  verifiedAt?: string | null
+  /** Set after email confirmation (ISO string). */
+  email_confirmed_at?: string | null
+  /** Set after lawyer completes onboarding wizard (ISO string). Lawyers only. */
+  onboarding_completed_at?: string | null
+  /** Set after SEP verification passes (ISO string). Lawyers only. */
+  verified_at?: string | null
 }
 
 interface TokenSet {
