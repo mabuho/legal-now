@@ -3,6 +3,7 @@ package com.legalnow.api.auth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -152,6 +153,60 @@ class AuthServiceTest {
         ).orElseThrow();
         assertNotNull(profile);
         org.junit.jupiter.api.Assertions.assertNull(profile.getBarId());
+    }
+
+    @Test
+    void register_generatesEmailConfirmToken() {
+        authService.register(new RegisterRequest(
+            "token@example.com", "password123", "Token", Role.CLIENT, null
+        ));
+        var u = userRepository.findByEmail("token@example.com").orElseThrow();
+        assertNotNull(u.getEmailConfirmToken());
+        assertNotNull(u.getEmailConfirmExpiresAt());
+        assertNull(u.getEmailConfirmedAt());
+        assertEquals(64, u.getEmailConfirmToken().length());
+    }
+
+    @Test
+    void confirmEmail_validToken_setsConfirmedAt() {
+        authService.register(new RegisterRequest(
+            "confirm@example.com", "password123", "Confirm", Role.CLIENT, null
+        ));
+        String token = userRepository.findByEmail("confirm@example.com").orElseThrow().getEmailConfirmToken();
+        authService.confirmEmail(token);
+        assertNotNull(userRepository.findByEmail("confirm@example.com").orElseThrow().getEmailConfirmedAt());
+        assertNull(userRepository.findByEmail("confirm@example.com").orElseThrow().getEmailConfirmToken());
+    }
+
+    @Test
+    void confirmEmail_expiredToken_throws() {
+        authService.register(new RegisterRequest(
+            "expired@example.com", "password123", "Expired", Role.CLIENT, null
+        ));
+        var u = userRepository.findByEmail("expired@example.com").orElseThrow();
+        u.setEmailConfirmExpiresAt(java.time.Instant.now().minusSeconds(1));
+        userRepository.save(u);
+        String token = u.getEmailConfirmToken();
+        assertThrows(com.legalnow.api.auth.exception.TokenExpiredException.class,
+            () -> authService.confirmEmail(token));
+    }
+
+    @Test
+    void confirmEmail_invalidToken_throws() {
+        assertThrows(com.legalnow.api.auth.exception.TokenInvalidException.class,
+            () -> authService.confirmEmail("invalid-token-that-does-not-exist"));
+    }
+
+    @Test
+    void resendConfirmation_regeneratesToken() {
+        authService.register(new RegisterRequest(
+            "resend@example.com", "password123", "Resend", Role.CLIENT, null
+        ));
+        String first = userRepository.findByEmail("resend@example.com").orElseThrow().getEmailConfirmToken();
+        authService.resendConfirmation("resend@example.com");
+        String second = userRepository.findByEmail("resend@example.com").orElseThrow().getEmailConfirmToken();
+        assertNotEquals(first, second);
+        assertNotNull(second);
     }
 
     private static boolean isDockerAvailable() {

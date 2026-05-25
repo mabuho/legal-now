@@ -39,6 +39,9 @@ public class VerificationAttempt {
     @Column(name = "reviewed_at")
     private OffsetDateTime reviewedAt;
 
+    @Column(name = "validation_type", nullable = false)
+    private String validationType = "admin-manual";
+
     public VerificationAttempt() {
     }
 
@@ -93,6 +96,9 @@ public class VerificationAttempt {
     public void setReviewedAt(OffsetDateTime reviewedAt) {
         this.reviewedAt = reviewedAt;
     }
+
+    public String getValidationType() { return validationType; }
+    public void setValidationType(String validationType) { this.validationType = validationType; }
 
     @Override
     public boolean equals(Object o) {

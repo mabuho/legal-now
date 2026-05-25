@@ -67,6 +67,20 @@ public class VerificationService {
         attemptRepository.save(attempt);
     }
 
+    @Transactional
+    public VerificationAttempt recordSystemAttempt(UUID lawyerId, String status, String notes) {
+        VerificationAttempt attempt = new VerificationAttempt();
+        attempt.setId(UUID.randomUUID());
+        attempt.setLawyerId(lawyerId);
+        attempt.setStatus(status);
+        attempt.setNotes(notes);
+        attempt.setValidationType("system-api");
+        if ("approved".equals(status) || "rejected".equals(status)) {
+            attempt.setReviewedAt(OffsetDateTime.now());
+        }
+        return attemptRepository.save(attempt);
+    }
+
     private VerificationAttempt latestPendingAttempt(UUID lawyerId) {
         return attemptRepository.findByLawyerId(lawyerId).stream()
             .filter(a -> "pending".equals(a.getStatus()))
