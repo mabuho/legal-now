@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.legalnow.api.auth.dto.AuthResponse;
+import com.legalnow.api.auth.dto.ConfirmEmailRequest;
+import com.legalnow.api.auth.dto.ConfirmEmailResponse;
 import com.legalnow.api.auth.dto.LoginRequest;
 import com.legalnow.api.auth.dto.RefreshRequest;
 import com.legalnow.api.auth.dto.RegisterRequest;
+import com.legalnow.api.auth.dto.ResendConfirmationRequest;
 import com.legalnow.api.auth.dto.UserResponse;
 import com.legalnow.api.auth.exception.InvalidTokenException;
 import com.legalnow.api.user.User;
@@ -55,6 +58,19 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest request) {
         authService.logout(request.refreshToken());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/confirm-email")
+    public ResponseEntity<ConfirmEmailResponse> confirmEmail(
+            @Valid @RequestBody ConfirmEmailRequest req) {
+        return ResponseEntity.ok(authService.confirmEmail(req.token()));
+    }
+
+    @PostMapping("/resend-confirmation")
+    public ResponseEntity<Void> resendConfirmation(
+            @Valid @RequestBody ResendConfirmationRequest req) {
+        authService.resendConfirmation(req.email());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")

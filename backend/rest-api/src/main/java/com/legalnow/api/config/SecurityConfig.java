@@ -37,6 +37,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/me").authenticated()
                 .requestMatchers(
                     "/api/v1/auth/**",
+                    "/api/v1/auth/confirm-email",
+                    "/api/v1/auth/resend-confirmation",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",

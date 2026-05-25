@@ -1,21 +1,28 @@
 package com.legalnow.api.auth;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.legalnow.api.auth.dto.AuthResponse;
+import com.legalnow.api.auth.dto.ConfirmEmailResponse;
 import com.legalnow.api.auth.dto.LoginRequest;
 import com.legalnow.api.auth.dto.RegisterRequest;
 import com.legalnow.api.auth.dto.TokenResponse;
 import com.legalnow.api.auth.dto.UserResponse;
 import com.legalnow.api.auth.exception.EmailAlreadyExistsException;
 import com.legalnow.api.auth.exception.InvalidCredentialsException;
+import com.legalnow.api.auth.exception.TokenExpiredException;
+import com.legalnow.api.auth.exception.TokenInvalidException;
 import com.legalnow.api.auth.refresh.RefreshTokenService;
 import com.legalnow.api.auth.refresh.RefreshTokenService.IssuedRefreshToken;
 import com.legalnow.api.auth.refresh.RefreshTokenService.RotationResult;
+import com.legalnow.api.email.EmailService;
 import com.legalnow.api.lawyer.domain.LawyerProfile;
 import com.legalnow.api.lawyer.domain.LawyerProfileRepository;
 import com.legalnow.api.user.Role;
@@ -30,19 +37,22 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final LawyerProfileRepository lawyerProfileRepository;
+    private final EmailService emailService;
 
     public AuthService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         JwtService jwtService,
         RefreshTokenService refreshTokenService,
-        LawyerProfileRepository lawyerProfileRepository
+        LawyerProfileRepository lawyerProfileRepository,
+        EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.lawyerProfileRepository = lawyerProfileRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -56,6 +66,13 @@ public class AuthService {
         user.setName(req.name());
         user.setRole(req.role());
         User saved = userRepository.save(user);
+
+        String confirmToken = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
+        confirmToken = confirmToken.substring(0, 64);
+        saved.setEmailConfirmToken(confirmToken);
+        saved.setEmailConfirmExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
+        userRepository.save(saved);
+        emailService.sendConfirmationEmail(saved.getEmail(), confirmToken);
 
         if (saved.getRole() == Role.LAWYER) {
             LawyerProfile lp = new LawyerProfile();
@@ -94,6 +111,33 @@ public class AuthService {
     public void logout(String rawRefreshToken) {
         // No-op if not found — don't leak token existence.
         refreshTokenService.revoke(rawRefreshToken);
+    }
+
+    @Transactional
+    public ConfirmEmailResponse confirmEmail(String token) {
+        User user = userRepository.findByEmailConfirmToken(token)
+            .orElseThrow(TokenInvalidException::new);
+        if (user.getEmailConfirmExpiresAt().isBefore(Instant.now())) {
+            throw new TokenExpiredException();
+        }
+        user.setEmailConfirmedAt(Instant.now());
+        user.setEmailConfirmToken(null);
+        user.setEmailConfirmExpiresAt(null);
+        userRepository.save(user);
+        return new ConfirmEmailResponse("Email confirmed", true);
+    }
+
+    @Transactional
+    public void resendConfirmation(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getEmailConfirmedAt() != null) return;
+        String token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
+        token = token.substring(0, 64);
+        user.setEmailConfirmToken(token);
+        user.setEmailConfirmExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
+        userRepository.save(user);
+        emailService.sendConfirmationEmail(user.getEmail(), token);
     }
 
     private AuthResponse buildAuthResponse(User user) {

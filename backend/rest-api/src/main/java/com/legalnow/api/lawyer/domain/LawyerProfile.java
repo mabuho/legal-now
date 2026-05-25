@@ -63,6 +63,9 @@ public class LawyerProfile {
     )
     private Set<Specialization> specializations = new HashSet<>();
 
+    @Column(name = "onboarding_completed_at")
+    private OffsetDateTime onboardingCompletedAt;
+
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", insertable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -145,6 +148,9 @@ public class LawyerProfile {
     public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public OffsetDateTime getOnboardingCompletedAt() { return onboardingCompletedAt; }
+    public void setOnboardingCompletedAt(OffsetDateTime onboardingCompletedAt) { this.onboardingCompletedAt = onboardingCompletedAt; }
 
     public boolean isVerified() {
         return verifiedAt != null;

@@ -1,5 +1,6 @@
 package com.legalnow.api.user;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -49,6 +50,15 @@ public class User {
     @Generated(event = { EventType.INSERT, EventType.UPDATE })
     @Column(name = "updated_at", insertable = false, updatable = false)
     private OffsetDateTime updatedAt;
+
+    @Column(name = "email_confirm_token")
+    private String emailConfirmToken;
+
+    @Column(name = "email_confirm_expires_at")
+    private Instant emailConfirmExpiresAt;
+
+    @Column(name = "email_confirmed_at")
+    private Instant emailConfirmedAt;
 
     public User() {
     }
@@ -115,6 +125,15 @@ public class User {
     public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public String getEmailConfirmToken() { return emailConfirmToken; }
+    public void setEmailConfirmToken(String emailConfirmToken) { this.emailConfirmToken = emailConfirmToken; }
+
+    public Instant getEmailConfirmExpiresAt() { return emailConfirmExpiresAt; }
+    public void setEmailConfirmExpiresAt(Instant emailConfirmExpiresAt) { this.emailConfirmExpiresAt = emailConfirmExpiresAt; }
+
+    public Instant getEmailConfirmedAt() { return emailConfirmedAt; }
+    public void setEmailConfirmedAt(Instant emailConfirmedAt) { this.emailConfirmedAt = emailConfirmedAt; }
 
     @Override
     public boolean equals(Object o) {

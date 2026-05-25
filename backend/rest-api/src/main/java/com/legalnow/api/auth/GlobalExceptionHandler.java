@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.legalnow.api.auth.exception.EmailAlreadyExistsException;
 import com.legalnow.api.auth.exception.InvalidCredentialsException;
 import com.legalnow.api.auth.exception.InvalidTokenException;
+import com.legalnow.api.auth.exception.TokenExpiredException;
+import com.legalnow.api.auth.exception.TokenInvalidException;
 import com.legalnow.api.common.exception.BadRequestException;
 import com.legalnow.api.common.exception.ConflictException;
 import com.legalnow.api.common.exception.ForbiddenException;
@@ -65,6 +67,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(error("bad_request", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Map<String, Object>> handleTokenExpired(TokenExpiredException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(error("token_expired", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<Map<String, Object>> handleTokenInvalid(TokenInvalidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(error("token_invalid", ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
