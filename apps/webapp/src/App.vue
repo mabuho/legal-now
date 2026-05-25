@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-import Footer from '@/components/Footer.vue'
 
 const route = useRoute()
 
@@ -18,7 +17,6 @@ const isDashboardRoute = computed(() => {
       <main>
         <router-view />
       </main>
-      <Footer />
     </template>
 
     <!-- Show only router view for dashboard routes -->

@@ -7,56 +7,68 @@ const currentYear = new Date().getFullYear()
   <footer id="contact" class="border-t bg-zinc-950 border-zinc-800">
     <div class="mx-auto max-w-7xl px-6 py-16 grid gap-8 md:grid-cols-4 text-sm">
       <div class="space-y-4">
-        <div class="text-xl font-semibold tracking-tight">LN</div>
-        <p class="text-zinc-400">Fast, trustworthy legal advice on demand.</p>
+        <div
+          class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
+          LegalNow
+        </div>
+        <p class="text-zinc-400">Asesoramiento legal rápido y fiable cuando lo necesite.</p>
         <div class="flex gap-4 mt-4">
-          <a href="#" class="hover:text-indigo-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" data-lucide="twitter" strokewidth="1.5" class="lucide lucide-twitter w-5 h-5">
+          <a href="#" class="hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              data-lucide="twitter" strokewidth="1.5" class="lucide lucide-twitter w-5 h-5">
               <path
                 d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
               </path>
-            </svg></a>
-          <a href="#" class="hover:text-indigo-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" data-lucide="linkedin" strokewidth="1.5" class="lucide lucide-linkedin w-5 h-5">
+            </svg>
+          </a>
+          <a href="#" class="hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              data-lucide="linkedin" strokewidth="1.5" class="lucide lucide-linkedin w-5 h-5">
               <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
               <rect width="4" height="12" x="2" y="9"></rect>
               <circle cx="4" cy="4" r="2"></circle>
-            </svg></a>
-          <a href="#" class="hover:text-indigo-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" data-lucide="facebook" strokewidth="1.5" class="lucide lucide-facebook w-5 h-5">
+            </svg>
+          </a>
+          <a href="#" class="hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              data-lucide="facebook" strokewidth="1.5" class="lucide lucide-facebook w-5 h-5">
               <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-            </svg></a>
+            </svg>
+          </a>
         </div>
       </div>
+      <!-- Update this section -->
       <div class="space-y-2">
-        <h4 class="font-semibold mb-2">Company</h4>
-        <a href="#" class="block hover:text-indigo-400">About</a>
-        <a href="#" class="block hover:text-indigo-400">Blog</a>
-        <a href="#" class="block hover:text-indigo-400">Careers</a>
+        <h4 class="font-body text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Producto</h4>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Como funciona</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Abogados</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Especialidades</a>
       </div>
       <div class="space-y-2">
-        <h4 class="font-semibold mb-2">Legal</h4>
-        <a href="#" class="block hover:text-indigo-400">Terms</a>
-        <a href="#" class="block hover:text-indigo-400">Privacy</a>
-        <a href="#" class="block hover:text-indigo-400">Cookies</a>
+        <h4 class="font-body text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Abogados</h4>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Unirse</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Requisitos</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Pagos</a>
       </div>
       <div class="space-y-2">
-        <h4 class="font-semibold mb-2">Support</h4>
-        <a href="#" class="block hover:text-indigo-400">Help Center</a>
-        <a href="#" class="block hover:text-indigo-400">Contact</a>
+        <h4 class="font-body text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Legal</h4>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Privacidad</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Terminos</a>
+        <a href="#" class="block font-body text-sm text-text-secondary hover:text-indigo-400">Contacto</a>
       </div>
     </div>
     <div class="border-t text-center py-6 text-xs text-zinc-500 border-zinc-800">
-      © <span id="year">2025</span> LegalNow Inc. All rights reserved.
+      © <span id="year">{{ currentYear }}</span> LegalNow Inc. Todos los derechos reservados.
     </div>
   </footer>
 </template>
 
 <style scoped>
 @reference "tailwindcss";
+
 /* Base styles */
 .footer-link {
   @apply text-base text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors duration-200;

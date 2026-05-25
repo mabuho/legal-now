@@ -123,18 +123,6 @@ const router = createRouter({
   ],
 })
 
-// Middleware de autenticación
-/*router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const isAuthenticated = localStorage.getItem('user') // Esto deberá adaptarse a tu sistema de autenticación
-
-  if (requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else {
-    next()
-  }
-})*/
-
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
   if (!auth.user) auth.init()

@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Role } from '@/types/user'
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
 const API_BASE: string = import.meta.env.VITE_API_BASE || (() => { throw new Error('[authStore] VITE_API_BASE is not defined.') })()
 
 const AUTH_STORAGE_KEY = 'legalnow-auth'
@@ -20,6 +20,12 @@ export interface AuthUser {
   avatar?: string | null
   /** Lawyer room assignment — still used by Janus views (pre-2b). */
   roomId?: number
+  /** Set after email confirmation. */
+  emailConfirmedAt?: string | null
+  /** Set after lawyer completes onboarding wizard. */
+  onboardingCompletedAt?: string | null
+  /** Set after SEP verification passes. */
+  verifiedAt?: string | null
 }
 
 interface TokenSet {

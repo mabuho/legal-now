@@ -1,4 +1,5 @@
 <template>
+  <Header />
   <div class="min-h-screen flex items-center justify-center bg-surface-base px-4">
     <div class="w-full max-w-md p-8 rounded-card shadow-2xl bg-surface-card border border-border-default">
       <h2 class="text-2xl font-heading font-bold text-center text-text-primary mb-8">
@@ -10,19 +11,11 @@
           <label for="email" class="block mb-1 font-body text-sm text-text-secondary">
             Correo electrónico
           </label>
-          <input
-            v-model="formData.email"
-            type="email"
-            id="email"
-            placeholder="tu@correo.com"
-            aria-required="true"
-            :aria-invalid="errors.email ? true : false"
-            aria-describedby="email-error"
-            :class="[
+          <input v-model="formData.email" type="email" id="email" placeholder="tu@correo.com" aria-required="true"
+            :aria-invalid="errors.email ? true : false" aria-describedby="email-error" :class="[
               'w-full px-4 py-3 rounded-input border bg-surface-raised text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/60 transition-colors',
               errors.email ? 'border-status-error' : 'border-border-default',
-            ]"
-          />
+            ]" />
           <p v-if="errors.email" id="email-error" role="alert" class="text-status-error text-xs mt-1">
             {{ errors.email }}
           </p>
@@ -33,25 +26,14 @@
             Contraseña
           </label>
           <div class="relative">
-            <input
-              v-model="formData.password"
-              :type="showPassword ? 'text' : 'password'"
-              id="password"
-              placeholder="••••••••"
-              aria-required="true"
-              :aria-invalid="errors.password ? true : false"
-              aria-describedby="password-error"
-              :class="[
+            <input v-model="formData.password" :type="showPassword ? 'text' : 'password'" id="password"
+              placeholder="••••••••" aria-required="true" :aria-invalid="errors.password ? true : false"
+              aria-describedby="password-error" :class="[
                 'w-full px-4 py-3 rounded-input border bg-surface-raised text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary/60 transition-colors',
                 errors.password ? 'border-status-error' : 'border-border-default',
-              ]"
-            />
-            <button
-              type="button"
-              @click="showPassword = !showPassword"
-              aria-label="Mostrar u ocultar contraseña"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
-            >
+              ]" />
+            <button type="button" @click="showPassword = !showPassword" aria-label="Mostrar u ocultar contraseña"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors">
               <EyeIcon v-if="showPassword" class="w-5 h-5" />
               <EyeSlashIcon v-else class="w-5 h-5" />
             </button>
@@ -67,11 +49,8 @@
           </a>
         </div>
 
-        <button
-          type="submit"
-          :disabled="isLoading"
-          class="w-full py-3 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white font-body font-semibold shadow-glow-btn hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" :disabled="isLoading"
+          class="w-full py-3 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white font-body font-semibold shadow-glow-btn hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isLoading ? 'Iniciando sesión...' : 'Iniciar sesión' }}
         </button>
       </form>
@@ -84,6 +63,7 @@
       </p>
     </div>
   </div>
+  <Footer />
 </template>
 
 <script setup lang="ts">
@@ -91,6 +71,8 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
+import Footer from '@/components/Footer.vue'
+import Header from '@/components/Header.vue'
 
 const router = useRouter()
 const auth = useAuthStore()

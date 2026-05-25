@@ -19,11 +19,6 @@ const loading = ref(false)
 
 type RequestTab = 'active' | 'completed' | 'rejected'
 const selectedTab = ref<RequestTab>('active')
-const tabs: { key: RequestTab; label: string }[] = [
-  { key: 'active', label: 'En curso' },
-  { key: 'completed', label: 'Completadas' },
-  { key: 'rejected', label: 'Rechazadas' },
-]
 
 const tabStatuses: Record<RequestTab, ConsultationStatus[]> = {
   active: [ConsultationStatus.ACCEPTED, ConsultationStatus.SCHEDULED, ConsultationStatus.IN_PROGRESS],
@@ -74,12 +69,12 @@ const paymentMethods = ref<PaymentMethod[]>([
 const paymentDetails = computed(() =>
   activeConsultation.value
     ? {
-        service: activeConsultation.value.title,
-        professional: activeConsultation.value.lawyer.name,
-        date: new Date(activeConsultation.value.created_at).toLocaleDateString(),
-        time: new Date(activeConsultation.value.created_at).toLocaleTimeString(),
-        amount: 0, // TODO: Phase 5 — load from /payments or lawyer.consultation_rate
-      }
+      service: activeConsultation.value.title,
+      professional: activeConsultation.value.lawyer.name,
+      date: new Date(activeConsultation.value.created_at).toLocaleDateString(),
+      time: new Date(activeConsultation.value.created_at).toLocaleTimeString(),
+      amount: 0, // TODO: Phase 5 — load from /payments or lawyer.consultation_rate
+    }
     : null,
 )
 
@@ -202,21 +197,19 @@ onMounted(async () => {
           Pendiente de autorización
         </p>
         <template v-if="pendingList.length > 0">
-          <div
-            v-for="c in pendingList"
-            :key="c.id"
-            :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
-              selectedConsultationId === c.id
-                ? 'bg-surface-card border-brand-primary/40 shadow-glow'
-                : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
-            @click="selectedConsultationId = c.id"
-          >
+          <div v-for="c in pendingList" :key="c.id" :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
+            selectedConsultationId === c.id
+              ? 'bg-surface-card border-brand-primary/40 shadow-glow'
+              : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
+            @click="selectedConsultationId = c.id">
             <div class="flex justify-between items-start gap-2">
               <div class="min-w-0">
                 <p class="font-heading font-semibold text-sm text-text-primary truncate">{{ c.title }}</p>
-                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}</p>
+                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}
+                </p>
               </div>
-              <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
+              <span
+                :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
                 {{ statusLabel(c.status) }}
               </span>
             </div>
@@ -231,21 +224,19 @@ onMounted(async () => {
           En curso
         </p>
         <template v-if="activeList.length > 0">
-          <div
-            v-for="c in activeList"
-            :key="c.id"
-            :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
-              selectedConsultationId === c.id
-                ? 'bg-surface-card border-brand-primary/40 shadow-glow'
-                : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
-            @click="selectedConsultationId = c.id"
-          >
+          <div v-for="c in activeList" :key="c.id" :class="['mx-3 mb-2 p-3 rounded-card cursor-pointer transition-all border',
+            selectedConsultationId === c.id
+              ? 'bg-surface-card border-brand-primary/40 shadow-glow'
+              : 'bg-surface-raised border-border-default hover:border-brand-primary/20']"
+            @click="selectedConsultationId = c.id">
             <div class="flex justify-between items-start gap-2">
               <div class="min-w-0">
                 <p class="font-heading font-semibold text-sm text-text-primary truncate">{{ c.title }}</p>
-                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}</p>
+                <p class="font-body text-xs text-text-muted mt-0.5">{{ c.lawyer.name }} · {{ formatDate(c.created_at) }}
+                </p>
               </div>
-              <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
+              <span
+                :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag shrink-0', statusBadgeClass(c.status)]">
                 {{ statusLabel(c.status) }}
               </span>
             </div>
@@ -259,13 +250,17 @@ onMounted(async () => {
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Empty state -->
       <div v-if="!selectedDetail" class="flex-1 flex flex-col items-center justify-center gap-4 text-center p-8">
-        <div class="w-16 h-16 rounded-card bg-surface-card border border-border-default flex items-center justify-center">
+        <div
+          class="w-16 h-16 rounded-card bg-surface-card border border-border-default flex items-center justify-center">
           <svg class="w-8 h-8 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1M3 12h1m16 0h1M5.636 5.636l.707.707M17.657 17.657l.707.707M5.636 18.364l.707-.707M17.657 6.343l.707-.707M9 12a3 3 0 106 0 3 3 0 00-6 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 3v1m0 16v1M3 12h1m16 0h1M5.636 5.636l.707.707M17.657 17.657l.707.707M5.636 18.364l.707-.707M17.657 6.343l.707-.707M9 12a3 3 0 106 0 3 3 0 00-6 0z" />
           </svg>
         </div>
         <p class="font-heading font-semibold text-text-secondary">Selecciona una consulta</p>
-        <p class="font-body text-sm text-text-muted max-w-xs">Elige una consulta de la lista para ver el detalle y acceder al chat</p>
+        <p class="font-body text-sm text-text-muted max-w-xs">Elige una consulta de la lista para ver el detalle y
+          acceder
+          al chat</p>
       </div>
 
       <!-- Detail -->
@@ -274,24 +269,23 @@ onMounted(async () => {
         <div class="px-6 py-4 border-b border-border-subtle bg-surface-raised flex items-start justify-between gap-4">
           <div class="min-w-0">
             <h2 class="font-heading font-semibold text-text-primary truncate">{{ selectedDetail.title }}</h2>
-            <p class="font-body text-sm text-text-muted mt-0.5">{{ selectedDetail.lawyer.name }} · {{ formatDate(selectedDetail.created_at) }}</p>
+            <p class="font-body text-sm text-text-muted mt-0.5">{{ selectedDetail.lawyer.name }} · {{
+              formatDate(selectedDetail.created_at) }}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <span :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag', statusBadgeClass(selectedDetail.status)]">
+            <span
+              :class="['font-body text-xs font-semibold px-2 py-0.5 rounded-tag', statusBadgeClass(selectedDetail.status)]">
               {{ statusLabel(selectedDetail.status) }}
             </span>
             <button
               v-if="hasChatSession(selectedDetail.id) && [ConsultationStatus.ACCEPTED, ConsultationStatus.SCHEDULED, ConsultationStatus.IN_PROGRESS].includes(selectedDetail.status)"
               @click="goToChat(selectedDetail)"
-              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white shadow-glow-btn hover:opacity-90 transition-opacity"
-            >
-              Abrir chat →
+              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn bg-gradient-to-r from-brand-primary-dark to-brand-accent text-white shadow-glow-btn hover:opacity-90 transition-opacity">
+              Abrir chat
             </button>
-            <button
-              v-if="[ConsultationStatus.PENDING, ConsultationStatus.ACCEPTED].includes(selectedDetail.status)"
+            <button v-if="[ConsultationStatus.PENDING, ConsultationStatus.ACCEPTED].includes(selectedDetail.status)"
               @click="deleteRequestModalVisible = true"
-              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn border border-status-error/40 text-status-error hover:bg-status-error/10 transition-colors"
-            >
+              class="font-body text-sm font-semibold px-3 py-1.5 rounded-btn border border-status-error/40 text-status-error hover:bg-status-error/10 transition-colors">
               Cancelar
             </button>
           </div>
@@ -306,7 +300,8 @@ onMounted(async () => {
           <div class="bg-surface-card border border-border-default rounded-card p-4">
             <p class="font-body text-xs text-text-muted uppercase tracking-widest mb-2">Abogado</p>
             <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-accent flex items-center justify-center font-heading font-bold text-xs text-white shrink-0">
+              <div
+                class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-accent flex items-center justify-center font-heading font-bold text-xs text-white shrink-0">
                 {{ selectedDetail.lawyer.name?.[0]?.toUpperCase() }}
               </div>
               <div>
@@ -321,22 +316,13 @@ onMounted(async () => {
 
   <!-- Payment modal — disabled pending Phase 5 -->
   <BaseModal :visible="paymentModalVisible" @close="paymentModalVisible = false">
-    <PaymentConfirmation
-      v-if="paymentDetails"
-      :paymentDetails="paymentDetails"
-      :paymentMethods="paymentMethods"
-      @close="paymentModalVisible = false"
-    />
+    <PaymentConfirmation v-if="paymentDetails" :paymentDetails="paymentDetails" :paymentMethods="paymentMethods"
+      @close="paymentModalVisible = false" />
   </BaseModal>
 
   <!-- Cancel consultation confirmation modal -->
   <BaseModal :visible="deleteRequestModalVisible" @close="deleteRequestModalVisible = false">
-    <AlertCard
-      title="Cancelar consulta"
-      message="¿Estás seguro de que deseas cancelar esta consulta?"
-      type="error"
-      buttonText="Cancelar consulta"
-      @close-alert="cancelActive"
-    />
+    <AlertCard title="Cancelar consulta" message="¿Estás seguro de que deseas cancelar esta consulta?" type="error"
+      buttonText="Cancelar consulta" @close-alert="cancelActive" />
   </BaseModal>
 </template>
