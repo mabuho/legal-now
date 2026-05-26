@@ -1,10 +1,13 @@
 <template>
-  <header class="sticky top-0 z-20 bg-surface-base/80 backdrop-blur-md border-b border-border-subtle">
-    <div v-if="!authStore.user" class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="/"
-        class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
-        LegalNow
-      </a>
+  <header class="flex h-16 sticky top-0 z-20 bg-surface-base/80 backdrop-blur-md border-b border-border-subtle">
+    <div v-if="!authStore.user" class="w-full max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center h-full gap-2">
+        <img src="@/assets/logo.png" alt="Consulta Legal" class="h-full w-auto py-2 object-contain">
+        <a href="/"
+          class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
+          Consulta Legal
+        </a>
+      </div>
 
       <!-- Header Public -->
       <div class="hidden md:flex items-center gap-8">
@@ -26,11 +29,14 @@
     </div>
 
     <!-- Header Auth -->
-    <div v-if="authStore.user" class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a :href="currentPath"
-        class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
-        LegalNow
-      </a>
+    <div v-if="authStore.user" class="w-full max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center h-full gap-2">
+        <img src="@/assets/logo.png" alt="Consulta Legal" class="h-full w-auto py-2 object-contain">
+        <a :href="currentPath"
+          class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
+          Consulta Legal
+        </a>
+      </div>
       <div class="flex items-center gap-1">
         <nav class="hidden md:flex items-center gap-8">
           <template v-for="(item, index) in navItems" :key="index">
