@@ -7,12 +7,15 @@ const currentYear = new Date().getFullYear()
   <footer id="contact" class="border-t bg-zinc-950 border-zinc-800">
     <div class="mx-auto max-w-7xl px-6 py-16 grid gap-8 md:grid-cols-4 text-sm">
       <div class="space-y-4">
-        <div
-          class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
-          LegalNow
+        <div class="flex items-center gap-2">
+          <img src="@/assets/logo.png" alt="Consulta Legal" class="h-13 w-auto py-2 object-contain">
+          <span
+            class="font-heading font-extrabold text-xl bg-gradient-to-r from-brand-primary to-indigo-400 bg-clip-text text-transparent select-none">
+            Consulta Legal
+          </span>
         </div>
         <p class="text-zinc-400">Asesoramiento legal rápido y fiable cuando lo necesite.</p>
-        <div class="flex gap-4 mt-4">
+        <!--<div class="flex gap-4 mt-4">
           <a href="#" class="hover:text-indigo-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -38,7 +41,7 @@ const currentYear = new Date().getFullYear()
               <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
             </svg>
           </a>
-        </div>
+        </div> -->
       </div>
       <!-- Update this section -->
       <div class="space-y-2">

@@ -13,7 +13,6 @@ const isDashboardRoute = computed(() => {
   <div>
     <!-- Show header and footer only for non-dashboard routes -->
     <template v-if="!isDashboardRoute">
-      <!-- <NavigationHeader /> -->
       <main>
         <router-view />
       </main>
