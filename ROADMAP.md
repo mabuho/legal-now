@@ -62,7 +62,7 @@ See `CLAUDE.md` for architecture reference. See `.claude/memory/` for context th
   - SEP fail → `VerificationAttempt(type='system-api', status='rejected')`, admin fallback habilitado
 - ✅ Email service interface + `ConsoleEmailService` stub (impl real diferida — Spring Mail / SES)
 
-**PR 3 — `feat/phase-5c-frontend`** (🟡 In Progress — PR pending)
+**PR 3 — `feat/phase-5c-frontend`** (✅ Done — PR #15)
 
 - ✅ `ConfirmEmailPendingView.vue` — pantalla post-registro (todos los roles)
 - ✅ `ConfirmEmailView.vue` — landing desde link email (`?token=`)
